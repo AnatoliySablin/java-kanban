@@ -1,3 +1,5 @@
+package model;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -9,7 +11,6 @@ public class Epic extends Task {
 
     public Epic(String task, String description, int id, Status status, ArrayList<Integer> subtaskCodes) {
         super(task, description, id, status);
-        this.subtaskCodes = subtaskCodes;
     }
 
     public ArrayList<Integer> getSubtaskCodes() {
@@ -20,4 +21,14 @@ public class Epic extends Task {
         subtaskCodes.add(code);
     }
 
+    @Override
+    public String toString() {
+        return "Epic{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
+                ", status=" + status + '\'' +
+                ", subtaskCodes=" + subtaskCodes +
+                '}';
+    }
 }
