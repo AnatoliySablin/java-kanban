@@ -18,37 +18,38 @@ public class TaskManager {
         return count+= 1;
     }
 
-    public Task createTask(Task task) {
+    public int createTask(Task task){
         if(task != null) {
             task.setId(getCount());
             tasks.put(task.getId(), task);
         }
-        return task;
+        return task.getId();
     }
 
-    public Epic createEpic(Epic epicId) {
-        if (epicId != null) {
-            epicId.setId(getCount());
-            epics.put(epicId.getId(), epicId);
+    public int createEpic(Epic epic) {
+        if (epic != null) {
+            epic.setId(getCount());
+            epics.put(epic.getId(), epic);
         }
-        return epicId;
+        return epic.getId();
     }
 
-    public Subtask createSubtask(Subtask subtask) {
+    public int createSubtask(Subtask subtask) {
         if (subtask != null) {
-            subtask.setId(getCount());
-            subtasks.put(subtask.getId(), subtask);
+            int epicId = subtask.getEpicId();
+            if (epics.containsKey(epicId)) {
+                subtask.setId(getCount());
+                subtasks.put(subtask.getId(), subtask);
+                epics.get(epicId).getSubtaskId().add(subtask.getId());
+                refreshStatus(epicId);
+            }
         }
-        return subtask;
+        return subtask.getId();
     }
 
 
     public ArrayList<Task> getTasks() {
-        ArrayList<Task> tasksArrayList = new ArrayList<>();
-        if (!tasks.isEmpty()) {
-            return new ArrayList<>(tasks.values());
-        }
-        return null;
+        return new ArrayList<>(tasks.values());
     }
 
     public ArrayList<Epic> getEpics() {
@@ -83,7 +84,7 @@ public class TaskManager {
     public boolean clearSubtaskList() {
         if (!subtasks.isEmpty() && !epics.isEmpty()) {
             for (Epic epic : epics.values()) {
-                epic.getSubtaskCodes().clear();
+                epic.getSubtaskId().clear();
                 refreshStatus(epic.getId());
             }
             subtasks.clear();
@@ -114,7 +115,7 @@ public class TaskManager {
 
     public boolean deleteEpic(int id) {
         if (!epics.isEmpty() && epics.containsKey(id)) {
-            ArrayList<Integer> codes =  epics.get(id).getSubtaskCodes();
+            ArrayList<Integer> codes =  epics.get(id).getSubtaskId();
             for (Integer code : codes) {
                 subtasks.remove(code);
             }
@@ -129,7 +130,7 @@ public class TaskManager {
             Subtask subtask = subtasks.get(id);
                 Epic epic = epics.get(subtask.getEpicId()) ;
                 if (epic != null) {
-                    ArrayList<Integer> codes = epic.getSubtaskCodes();
+                    ArrayList<Integer> codes = epic.getSubtaskId();
                     codes.remove((Integer) subtask.getId());
                     subtasks.remove(id);
                     refreshStatus(epic.getId());
@@ -153,9 +154,11 @@ public class TaskManager {
 
     public Epic updateEpic(Epic epic) {
         if (epic != null ) {
-            int id = epic.getId();
-            if (epics.containsKey(id)) {
-                epics.put(epic.getId(), epic);
+            int epicId = epic.getId();
+            if (epics.containsKey(epicId)) {
+                Epic unupdatedEpic = epics.get(epicId);
+                unupdatedEpic.setName(epic.getName());
+                unupdatedEpic.setDescription(epic.getDescription());
                 return epic;
             }
         }
@@ -178,7 +181,7 @@ public class TaskManager {
     public ArrayList<Subtask> getSubtaskByEpic (Epic epicId) {
         ArrayList<Subtask> subtasksArrayList = new ArrayList<>();
         if(epicId != null) {
-            for (Integer id : epicId.getSubtaskCodes()) {
+            for (Integer id : epicId.getSubtaskId()) {
                 subtasksArrayList.add(subtasks.get(id));
             }
         }
@@ -191,7 +194,7 @@ public class TaskManager {
         if (epic != null) {
             ArrayList<Status> statuses = getSubtaskStatusesList(epic);
             Status epicStatus = calculateEpicStatus(statuses);
-            updateEpic(new Epic(epic.getName(), epic.getDescription(), epic.getId(), epicStatus, epic.getSubtaskCodes()));
+            epic.setStatus(epicStatus);
         }
     }
 

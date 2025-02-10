@@ -3,9 +3,10 @@ package model;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subtaskCodes = new ArrayList<>();
+    private ArrayList<Integer> subtaskId = new ArrayList<>();
 
     public Epic(String task, String description) {
+
         super(task, description);
     }
 
@@ -13,12 +14,13 @@ public class Epic extends Task {
         super(task, description, id, status);
     }
 
-    public ArrayList<Integer> getSubtaskCodes() {
-        return subtaskCodes;
+    public ArrayList<Integer> getSubtaskId() {
+
+        return subtaskId;
     }
 
-    public void addSubtaskCode(int code){
-        subtaskCodes.add(code);
+    public void addSubtaskId(int code) {
+        subtaskId.add(code);
     }
 
     @Override
@@ -28,7 +30,7 @@ public class Epic extends Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status + '\'' +
-                ", subtaskCodes=" + subtaskCodes +
+                ", subtaskCodes=" + subtaskId +
                 '}';
     }
 }
