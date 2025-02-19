@@ -3,14 +3,14 @@ package model;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subtaskId = new ArrayList<>();
+    private final ArrayList<Integer> subtaskId = new ArrayList<>();
 
     public Epic(String task, String description) {
 
         super(task, description);
     }
 
-    public Epic(String task, String description, int id, Status status, ArrayList<Integer> subtaskCodes) {
+    public Epic(String task, String description, int id, Status status) {
         super(task, description, id, status);
     }
 
