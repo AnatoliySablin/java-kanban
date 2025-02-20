@@ -1,10 +1,7 @@
-package Test;
+package manager;
 
-import manager.Managers;
-import manager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import model.Status;
 import model.Task;
 import model.Subtask;
 import model.Epic;
@@ -15,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
-    private static TaskManager taskManager;
+    private TaskManager taskManager;
 
     @BeforeEach
     public void beforeEach() {
