@@ -4,10 +4,7 @@ import model.Epic;
 import model.Subtask;
 import model.Task;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public interface TaskManager {
     int addTask(Task task);
@@ -46,7 +43,7 @@ public interface TaskManager {
 
     Subtask updateSubtask(Subtask subtask);;
 
-    List <Task> getHistory();
+    List<Task> getHistory();
 
-    ArrayList<Subtask> getEpicSubtasks(int epicId);
+    List<Subtask> getEpicSubtasks(int epicId);
 }

@@ -22,6 +22,7 @@ class InMemoryTaskManagerTest {
     @Test
     void addNewTask() {
         final Task task = new Task("Test addNewTask", "Test addNewTask description");
+        taskManager.addTask(task);
         final Task savedTask = taskManager.getTask(task.getId());
         assertNotNull(savedTask, "Задача не найдена.");
         assertEquals(task, savedTask, "Задачи не совпадают.");
@@ -36,12 +37,16 @@ class InMemoryTaskManagerTest {
     void addNewEpicAndSubtasks() {
         final Epic flatRenovation = new Epic("Сделать ремонт",
                 "Нужно успеть за отпуск");
+        taskManager.addEpic(flatRenovation);
         final Subtask flatRenovationSubtask1 = new Subtask("Поклеить обои",
                 "Обязательно светлые!", flatRenovation.getId());
+        taskManager.addSubtask(flatRenovationSubtask1);
         final Subtask flatRenovationSubtask2 = new Subtask("Установить новую технику",
                 "Старую продать на Авито", flatRenovation.getId());
+        taskManager.addSubtask(flatRenovationSubtask2);
         final Subtask flatRenovationSubtask3 = new Subtask("Заказать книжный шкаф", "Из темного дерева",
                 flatRenovation.getId());
+        taskManager.addSubtask(flatRenovationSubtask3);
         final Epic savedEpic = taskManager.getEpic(flatRenovation.getId());
         final Subtask savedSubtask1 = taskManager.getSubtask(flatRenovationSubtask1.getId());
         final Subtask savedSubtask2 = taskManager.getSubtask(flatRenovationSubtask2.getId());

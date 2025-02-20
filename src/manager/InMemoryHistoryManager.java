@@ -15,8 +15,6 @@ public class InMemoryHistoryManager implements HistoryManager {
                 history.removeFirst();
             }
             history.add(task);
-        } else {
-            return;
         }
     }
 

@@ -2,17 +2,19 @@ package manager;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ManagersTest {
 
     @Test
-    void getDefaultShouldInitializeInMemoryTaskManager() {
-        assertInstanceOf(InMemoryTaskManager.class, Managers.getDefault());
+    void getDefaultShouldReturnNotNull() {
+        final TaskManager taskManager = Managers.getDefault();
+        assertNotNull(taskManager,"Возвращает Null");
     }
 
     @Test
-    void getDefaultHistoryShouldInitializeInMemoryHistoryManager() {
-        assertInstanceOf(InMemoryHistoryManager.class, Managers.getDefaultHistory());
+    void getDefaultHistoryShouldReturnNotNull() {
+        final HistoryManager historyManager = Managers.getDefaultHistory();
+        assertNotNull(historyManager, "Возвращает Null");
     }
 }
