@@ -1,20 +1,20 @@
 package manager;
 
-import model.Status;
 import model.Epic;
-import model.Task;
+import model.Status;
 import model.Subtask;
+import model.Task;
 
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private int count;
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private final HistoryManager historyManager = Managers.getDefaultHistory();
+    private int count;
 
     @Override
     public List<Task> getHistory() {
