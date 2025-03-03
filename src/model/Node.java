@@ -6,7 +6,7 @@ public class Node<T> {
     private Node<T> next;
     private Task data;
 
-    public Node(Node<T> prev, Task data,Node<T> next) {
+    public Node(Node<T> prev, Task data, Node<T> next) {
         this.data = data;
         this.next = next;
         this.prev = prev;
