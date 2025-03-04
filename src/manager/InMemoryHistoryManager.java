@@ -9,9 +9,9 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
+    private final HashMap<Integer, Node<Task>> taskHistory;
     private Node<Task> head;
     private Node<Task> tail;
-    private final HashMap<Integer, Node<Task>> taskHistory;
 
 
     public InMemoryHistoryManager() {
@@ -45,9 +45,11 @@ public class InMemoryHistoryManager implements HistoryManager {
                 while (node != null && taskHistory.containsValue(head)) {
                     list.add(head.getData());
                     head = head.getNext();
-                } break;
+                }
+                break;
             }
-        } return list;
+        }
+        return list;
     }
 
     private Node<Task> linkLast(Task task) {
