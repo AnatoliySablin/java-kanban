@@ -8,17 +8,17 @@ public class Task {
     protected int id;
     protected Status status = Status.NEW;
 
-   public Task(String task, String description) {
-       this.name = task;
-       this.description = description;
-   }
+    public Task(String task, String description) {
+        this.name = task;
+        this.description = description;
+    }
 
-   public Task(String task, String description, int id, Status status){
-       this.name = task;
-       this.description = description;
-       this.id = id;
-       this.status = status;
-   }
+    public Task(String task, String description, int id, Status status) {
+        this.name = task;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+    }
 
     public int getId() {
         return id;
