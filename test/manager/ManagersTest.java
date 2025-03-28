@@ -9,7 +9,7 @@ class ManagersTest {
     @Test
     void getDefaultShouldReturnNotNull() {
         final TaskManager taskManager = Managers.getDefault();
-        assertNotNull(taskManager,"Возвращает Null");
+        assertNotNull(taskManager, "Возвращает Null");
     }
 
     @Test
