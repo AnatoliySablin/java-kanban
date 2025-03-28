@@ -1,8 +1,8 @@
 package manager;
 
 import model.Epic;
-import model.Subtask;
 import model.Status;
+import model.Subtask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class InMemoryTaskManagerEpicsTest {
     private TaskManager taskManager;
