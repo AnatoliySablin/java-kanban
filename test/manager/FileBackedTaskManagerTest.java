@@ -1,10 +1,8 @@
 package manager;
 
 import model.Epic;
-import model.Status;
 import model.Subtask;
 import model.Task;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -13,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,11 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileBackedTaskManagerTest {
 
-    private FileBackedTaskManager taskManager;
-    private FileBackedTaskManager taskManager2;
-
     @TempDir
     Path tempDir;
+    private FileBackedTaskManager taskManager;
+    private FileBackedTaskManager taskManager2;
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -64,17 +60,17 @@ public class FileBackedTaskManagerTest {
         taskManager2 = FileBackedTaskManager.loadFromFile(taskManager.file);
         List<Task> tasks = taskManager2.getTasks();
         assertEquals(1, tasks.size());
-        assertEquals(task1,tasks.get(0));
+        assertEquals(task1, tasks.get(0));
         List<Epic> epics = taskManager2.getEpics();
         assertEquals(2, epics.size());
-        assertEquals(epic1,epics.get(0));
-        assertEquals(epic2,epics.get(1));
+        assertEquals(epic1, epics.get(0));
+        assertEquals(epic2, epics.get(1));
         List<Subtask> subtasks = taskManager2.getSubtasks();
         assertEquals(4, subtasks.size());
-        assertEquals(subtask1,subtasks.get(0));
-        assertEquals(subtask2,subtasks.get(1));
-        assertEquals(subtask3,subtasks.get(2));
-        assertEquals(subtask4,subtasks.get(3));
+        assertEquals(subtask1, subtasks.get(0));
+        assertEquals(subtask2, subtasks.get(1));
+        assertEquals(subtask3, subtasks.get(2));
+        assertEquals(subtask4, subtasks.get(3));
     }
 
 
