@@ -34,15 +34,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         break;
                     case SUBTASK:
                         String[] lineArr = line.split(",");
-                        Subtask subtask = new Subtask(task.getName(), task.getDescription(), task.getStatus(), Integer.parseInt(lineArr[5]));
-                        subtask.setId(fileBackedTaskManager.getCount());
+                        Subtask subtask = new Subtask(task.getName(), task.getDescription(), task.getStatus(),
+                                Integer.parseInt(lineArr[5]));
+                        subtask.setId(task.getId());
                         int epicId = subtask.getEpicId();
-                        if (epics.containsKey(epicId)) {
+                        if (fileBackedTaskManager.epics.containsKey(epicId)) {
                             fileBackedTaskManager.subtasks.put(task.getId(), (Subtask) subtask);
-                            epics.get(epicId).getSubtaskId().add(subtask.getId());
+                            fileBackedTaskManager.epics.get(epicId).getSubtaskId().add(subtask.getId());
                         }
                         break;
                 }
+                fileBackedTaskManager.count =
+                        fileBackedTaskManager.getTasks().size() + fileBackedTaskManager.getEpics().size() + fileBackedTaskManager.getSubtasks().size();
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка загрузки из файла");
@@ -64,7 +67,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     epic.setId(Integer.parseInt(lineArr[0]));
                     return epic;
                 case SUBTASK:
-                    Subtask subtask = new Subtask(lineArr[2], lineArr[4], Status.valueOf(lineArr[3]), Integer.parseInt(lineArr[5]));
+                    Subtask subtask = new Subtask(lineArr[2], lineArr[4], Status.valueOf(lineArr[3]),
+                            Integer.parseInt(lineArr[5]));
                     subtask.setId(Integer.parseInt(lineArr[0]));
                     return subtask;
                 default:
@@ -104,58 +108,58 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public boolean clearEpicList() {
-        super.clearEpicList();
+        boolean result = super.clearEpicList();
         save();
-        return super.clearEpicList();
+        return result;
     }
 
     @Override
     public boolean clearSubtaskList() {
-        super.clearSubtaskList();
+        boolean result = super.clearSubtaskList();
         save();
-        return super.clearSubtaskList();
+        return result;
     }
 
     @Override
     public Task updateTask(Task newTask) {
-        super.updateTask(newTask);
+        Task result = super.updateTask(newTask);
         save();
-        return super.updateTask(newTask);
+        return result;
     }
 
     @Override
     public Epic updateEpic(Epic newEpic) {
-        super.updateEpic(newEpic);
+        Epic result = super.updateEpic(newEpic);
         save();
-        return super.updateEpic(newEpic);
+        return result;
     }
 
     @Override
     public Subtask updateSubtask(Subtask newSubtask) {
-        super.updateSubtask(newSubtask);
+        Subtask result = super.updateSubtask(newSubtask);
         save();
-        return super.updateSubtask(newSubtask);
+        return result;
     }
 
     @Override
     public boolean deleteTask(int id) {
-        super.deleteTask(id);
+        boolean result = super.deleteTask(id);
         save();
-        return super.deleteTask(id);
+        return result;
     }
 
     @Override
     public boolean deleteEpic(int id) {
-        super.deleteEpic(id);
+        boolean result = super.deleteEpic(id);
         save();
-        return super.deleteEpic(id);
+        return result;
     }
 
     @Override
     public boolean deleteSubtask(int id) {
-        super.deleteSubtask(id);
+        boolean result = super.deleteSubtask(id);
         save();
-        return super.deleteSubtask(id);
+        return result;
     }
 
 
@@ -191,26 +195,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } else {
             return String.format("%s,%s,%s,%s,%s\n", task.getId(), task.getTaskType(),
                     task.getName(), task.getStatus(), task.getDescription());
-        }
-    }
-
-    private int getCount() {
-        for (Task task : tasks.values()) {
-            count = Math.max(count, task.getId());
-        }
-
-        for (Epic epic : epics.values()) {
-            count = Math.max(count, epic.getId());
-        }
-
-        for (Subtask subtask : subtasks.values()) {
-            count = Math.max(count, subtask.getId());
-        }
-
-        if (count > 0) {
-            return count;
-        } else {
-            return 0;
         }
     }
 }

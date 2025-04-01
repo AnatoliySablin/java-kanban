@@ -55,6 +55,7 @@ public class FileBackedTaskManagerTest {
         assertEquals(epic1.getName(), epics.get(0).getName());
         assertEquals(epic1.getDescription(), epics.get(0).getDescription());
         assertEquals(epic1.getStatus(), epics.get(0).getStatus());
+        assertEquals(epic1.getSubtaskId(), epics.get(0).getSubtaskId());
         List<Subtask> subtasks = taskManager2.getSubtasks();
         assertEquals(1, subtasks.size());
         assertEquals(subtask1, subtasks.get(0));
