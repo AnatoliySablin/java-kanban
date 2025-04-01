@@ -13,8 +13,8 @@ public class InMemoryTaskManager implements TaskManager {
     protected static final HashMap<Integer, Task> tasks = new HashMap<>();
     protected static final HashMap<Integer, Epic> epics = new HashMap<>();
     protected static final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    protected static int count;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected int count;
 
     @Override
     public List<Task> getHistory() {
@@ -248,7 +248,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    protected ArrayList<Status> getSubtaskStatusesList(int epicId) {
+    public ArrayList<Status> getSubtaskStatusesList(int epicId) {
         ArrayList<Subtask> subtaskArrayList = getEpicSubtasks(epicId);
         ArrayList<Status> statuses = new ArrayList<>();
         if (!subtaskArrayList.isEmpty()) {

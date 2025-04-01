@@ -15,11 +15,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    private static int getCount() {
-        return count += 1;
-    }
-
-
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
         try (BufferedReader bf = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
@@ -32,17 +27,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 Task task = fromString(line);
                 switch (task.getTaskType()) {
                     case EPIC:
-                        epics.put(task.getId(), (Epic) task);
+                        fileBackedTaskManager.epics.put(task.getId(), (Epic) task);
                         break;
                     case TASK:
-                        tasks.put(task.getId(), task);
+                        fileBackedTaskManager.tasks.put(task.getId(), (Task) task);
                         break;
                     case SUBTASK:
                         String[] lineArr = line.split(",");
                         Subtask subtask = new Subtask(task.getName(), task.getDescription(), task.getStatus(), Integer.parseInt(lineArr[5]));
+                        subtask.setId(fileBackedTaskManager.getCount());
                         int epicId = subtask.getEpicId();
                         if (epics.containsKey(epicId)) {
-                            subtasks.put(subtask.getId(), subtask);
+                            fileBackedTaskManager.subtasks.put(task.getId(), (Subtask) subtask);
                             epics.get(epicId).getSubtaskId().add(subtask.getId());
                         }
                         break;
@@ -81,23 +77,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public int addTask(Task task) {
-        super.addTask(task);
+        int id = super.addTask(task);
         save();
-        return 0;
+        return id;
     }
 
     @Override
     public int addEpic(Epic epic) {
-        super.addEpic(epic);
+        int id = super.addEpic(epic);
         save();
-        return 0;
+        return id;
     }
 
     @Override
     public int addSubtask(Subtask subtask) {
-        super.addSubtask(subtask);
+        int id = super.addSubtask(subtask);
         save();
-        return 0;
+        return id;
     }
 
     @Override
@@ -110,56 +106,56 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public boolean clearEpicList() {
         super.clearEpicList();
         save();
-        return false;
+        return super.clearEpicList();
     }
 
     @Override
     public boolean clearSubtaskList() {
         super.clearSubtaskList();
         save();
-        return false;
+        return super.clearSubtaskList();
     }
 
     @Override
     public Task updateTask(Task newTask) {
         super.updateTask(newTask);
         save();
-        return newTask;
+        return super.updateTask(newTask);
     }
 
     @Override
     public Epic updateEpic(Epic newEpic) {
         super.updateEpic(newEpic);
         save();
-        return newEpic;
+        return super.updateEpic(newEpic);
     }
 
     @Override
     public Subtask updateSubtask(Subtask newSubtask) {
         super.updateSubtask(newSubtask);
         save();
-        return newSubtask;
+        return super.updateSubtask(newSubtask);
     }
 
     @Override
     public boolean deleteTask(int id) {
         super.deleteTask(id);
         save();
-        return false;
+        return super.deleteTask(id);
     }
 
     @Override
     public boolean deleteEpic(int id) {
         super.deleteEpic(id);
         save();
-        return false;
+        return super.deleteEpic(id);
     }
 
     @Override
     public boolean deleteSubtask(int id) {
         super.deleteSubtask(id);
         save();
-        return false;
+        return super.deleteSubtask(id);
     }
 
 
@@ -171,23 +167,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             if (super.getTasks().isEmpty()) {
                 fw.write("");
             } else {
-                for (Task task : super.getTasks()) {
+                for (Task task : getTasks()) {
                     fw.write(toString(task));
                 }
-            }
 
-            if (super.getEpics().isEmpty()) {
-                fw.write("");
-            } else {
-                for (Epic epic : super.getEpics()) {
+                for (Epic epic : getEpics()) {
                     fw.write(toString(epic));
                 }
-            }
 
-            if (super.getSubtasks().isEmpty()) {
-                fw.write("");
-            } else {
-                for (Subtask subtask : super.getSubtasks()) {
+                for (Subtask subtask : getSubtasks()) {
                     fw.write(toString(subtask));
                 }
             }
@@ -203,6 +191,26 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } else {
             return String.format("%s,%s,%s,%s,%s\n", task.getId(), task.getTaskType(),
                     task.getName(), task.getStatus(), task.getDescription());
+        }
+    }
+
+    private int getCount() {
+        for (Task task : tasks.values()) {
+            count = Math.max(count, task.getId());
+        }
+
+        for (Epic epic : epics.values()) {
+            count = Math.max(count, epic.getId());
+        }
+
+        for (Subtask subtask : subtasks.values()) {
+            count = Math.max(count, subtask.getId());
+        }
+
+        if (count > 0) {
+            return count;
+        } else {
+            return 0;
         }
     }
 }
