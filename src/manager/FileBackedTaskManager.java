@@ -5,6 +5,8 @@ import model.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -19,12 +21,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
         try (BufferedReader bf = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             String line = bf.readLine();
+            ArrayList<Integer> id = new ArrayList<>();
             while (bf.ready()) {
                 line = bf.readLine();
                 if (line.isEmpty()) {
                     break;
                 }
                 Task task = fromString(line);
+                id.add(task.getId());
                 switch (task.getTaskType()) {
                     case EPIC:
                         fileBackedTaskManager.epics.put(task.getId(), (Epic) task);
@@ -44,9 +48,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         }
                         break;
                 }
-                fileBackedTaskManager.count =
-                        fileBackedTaskManager.getTasks().size() + fileBackedTaskManager.getEpics().size() + fileBackedTaskManager.getSubtasks().size();
             }
+            fileBackedTaskManager.count = Collections.max(id);
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка загрузки из файла");
         }
