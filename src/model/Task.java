@@ -20,6 +20,12 @@ public class Task {
         this.status = status;
     }
 
+    public Task(String task, String description, Status status) {
+        this.name = task;
+        this.description = description;
+        this.status = status;
+    }
+
     public int getId() {
         return id;
     }
@@ -50,6 +56,10 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public TaskType getTaskType() {
+        return TaskType.TASK;
     }
 
     @Override

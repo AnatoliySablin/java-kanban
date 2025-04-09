@@ -10,11 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected final HashMap<Integer, Task> tasks = new HashMap<>();
+    protected final HashMap<Integer, Epic> epics = new HashMap<>();
+    protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private final HistoryManager historyManager = Managers.getDefaultHistory();
-    private int count;
+    protected int count;
 
     @Override
     public List<Task> getHistory() {
@@ -239,7 +239,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
-    private void updateStatus(int epicId) {
+    protected void updateStatus(int epicId) {
         Epic epic = getEpic(epicId);
         if (epic != null) {
             ArrayList<Status> statuses = getSubtaskStatusesList(epicId);
@@ -248,7 +248,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private ArrayList<Status> getSubtaskStatusesList(int epicId) {
+    public ArrayList<Status> getSubtaskStatusesList(int epicId) {
         ArrayList<Subtask> subtaskArrayList = getEpicSubtasks(epicId);
         ArrayList<Status> statuses = new ArrayList<>();
         if (!subtaskArrayList.isEmpty()) {
@@ -259,7 +259,7 @@ public class InMemoryTaskManager implements TaskManager {
         return statuses;
     }
 
-    private Status calculateEpicStatus(ArrayList<Status> statuses) {
+    protected Status calculateEpicStatus(ArrayList<Status> statuses) {
         Status epicStatus = Status.IN_PROGRESS;
         if (!statuses.isEmpty()) {
             if (!statuses.contains(Status.DONE) && !statuses.contains(Status.IN_PROGRESS)) {
