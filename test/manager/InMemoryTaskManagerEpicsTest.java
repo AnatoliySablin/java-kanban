@@ -30,8 +30,8 @@ public class InMemoryTaskManagerEpicsTest {
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
 
-        subtask1ForEpic1 = new Subtask("Сабтаск1", "Описание1", epic1.getId());
-        subtask2ForEpic1 = new Subtask("Сабтаск2", "Описание2", epic1.getId());
+        subtask1ForEpic1 = new Subtask("Сабтаск1", "Описание1", Status.NEW, epic1.getId());
+        subtask2ForEpic1 = new Subtask("Сабтаск2", "Описание2", Status.NEW, epic1.getId());
 
         taskManager.addSubtask(subtask1ForEpic1);
         taskManager.addSubtask(subtask2ForEpic1);
@@ -86,7 +86,7 @@ public class InMemoryTaskManagerEpicsTest {
 
     @Test
     public void shouldAddSubtask() {
-        Subtask subtask = new Subtask("name", "desc", epic1.getId());
+        Subtask subtask = new Subtask("name", "desc", Status.NEW, epic1.getId());
         taskManager.addSubtask(subtask);
 
         assertEquals(taskManager.getSubtask(subtask.getId()), subtask);

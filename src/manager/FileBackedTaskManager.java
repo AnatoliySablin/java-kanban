@@ -5,6 +5,9 @@ import model.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -39,7 +42,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     case SUBTASK:
                         String[] lineArr = line.split(",");
                         Subtask subtask = new Subtask(task.getName(), task.getDescription(), task.getStatus(),
-                                Integer.parseInt(lineArr[5]));
+                                task.getStartTime(), task.getDuration(), Integer.parseInt(lineArr[5]));
                         subtask.setId(task.getId());
                         int epicId = subtask.getEpicId();
                         if (fileBackedTaskManager.epics.containsKey(epicId)) {
@@ -61,7 +64,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String[] lineArr = line.split(",");
             switch (TaskType.valueOf(lineArr[1])) {
                 case TASK:
-                    Task task = new Task(lineArr[2], lineArr[4], Status.valueOf(lineArr[3]));
+                    Task task = new Task(lineArr[2], lineArr[4], Status.valueOf(lineArr[3]), LocalDateTime.parse(lineArr[5], DateTimeFormatter.ISO_LOCAL_DATE_TIME), Duration.ofMinutes(Integer.parseInt(lineArr[6])));
                     task.setId(Integer.parseInt(lineArr[0]));
                     return task;
                 case EPIC:
@@ -71,7 +74,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     return epic;
                 case SUBTASK:
                     Subtask subtask = new Subtask(lineArr[2], lineArr[4], Status.valueOf(lineArr[3]),
-                            Integer.parseInt(lineArr[5]));
+                            LocalDateTime.parse(lineArr[6], DateTimeFormatter.ISO_LOCAL_DATE_TIME), Duration.ofMinutes(Integer.parseInt(lineArr[7])), Integer.parseInt(lineArr[5]));
                     subtask.setId(Integer.parseInt(lineArr[0]));
                     return subtask;
                 default:
@@ -194,10 +197,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private String toString(Task task) {
         if (task.getTaskType().equals(TaskType.SUBTASK)) {
             return String.format("%s,%s,%s,%s,%s,%s\n", task.getId(), task.getTaskType(),
-                    task.getName(), task.getStatus(), task.getDescription(), ((Subtask) task).getEpicId());
+                    task.getName(), task.getStatus(), task.getDescription(), ((Subtask) task).getEpicId(), task.getStartTime(), task.getDuration());
         } else {
             return String.format("%s,%s,%s,%s,%s\n", task.getId(), task.getTaskType(),
-                    task.getName(), task.getStatus(), task.getDescription());
+                    task.getName(), task.getStatus(), task.getDescription(), task.getStartTime(), task.getDuration());
         }
     }
 }
