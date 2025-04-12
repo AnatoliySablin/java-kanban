@@ -8,8 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -25,6 +25,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try (BufferedReader bf = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             String line = bf.readLine();
             ArrayList<Integer> id = new ArrayList<>();
+            Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
+                    Comparator.nullsLast(Comparator.naturalOrder())));
             while (bf.ready()) {
                 line = bf.readLine();
                 if (line.isEmpty()) {
@@ -38,21 +40,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         break;
                     case TASK:
                         fileBackedTaskManager.tasks.put(task.getId(), (Task) task);
+                        prioritizedTasks.add(task);
                         break;
                     case SUBTASK:
                         String[] lineArr = line.split(",");
                         Subtask subtask = new Subtask(task.getName(), task.getDescription(), task.getStatus(),
                                 task.getStartTime(), task.getDuration(), Integer.parseInt(lineArr[5]));
+                        if (subtask.getEndTime().isAfter(task.getEndTime())) {
+                            fileBackedTaskManager.epics.get(subtask.getEpicId()).setEndTime(subtask.getEndTime());
+                        }
                         subtask.setId(task.getId());
                         int epicId = subtask.getEpicId();
                         if (fileBackedTaskManager.epics.containsKey(epicId)) {
                             fileBackedTaskManager.subtasks.put(task.getId(), (Subtask) subtask);
                             fileBackedTaskManager.epics.get(epicId).getSubtaskId().add(subtask.getId());
+                            prioritizedTasks.add(task);
                         }
                         break;
                 }
             }
-            fileBackedTaskManager.count = Collections.max(id);
+            if (id.isEmpty()) {
+                fileBackedTaskManager.count = 0;
+            } else {
+                fileBackedTaskManager.count = Collections.max(id);
+            }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка загрузки из файла");
         }
@@ -197,10 +208,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private String toString(Task task) {
         if (task.getTaskType().equals(TaskType.SUBTASK)) {
             return String.format("%s,%s,%s,%s,%s,%s\n", task.getId(), task.getTaskType(),
-                    task.getName(), task.getStatus(), task.getDescription(), ((Subtask) task).getEpicId(), task.getStartTime(), task.getDuration());
+                    task.getName(), task.getStatus(), task.getDescription(), ((Subtask) task).getEpicId());
         } else {
             return String.format("%s,%s,%s,%s,%s\n", task.getId(), task.getTaskType(),
-                    task.getName(), task.getStatus(), task.getDescription(), task.getStartTime(), task.getDuration());
+                    task.getName(), task.getStatus(), task.getDescription());
         }
     }
 }

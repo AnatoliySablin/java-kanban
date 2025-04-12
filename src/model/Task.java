@@ -100,12 +100,10 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        try {
-            return this.startTime.plus(Duration.ofMinutes(duration.toMinutes()));
-        } catch (NullPointerException e) {
-            System.out.println("NPE exception");
+        if (startTime == null || duration == null) {
             return null;
         }
+        return startTime.plus(duration);
     }
 
     @Override

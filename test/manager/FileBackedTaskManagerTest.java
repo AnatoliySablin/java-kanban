@@ -1,6 +1,8 @@
 package manager;
 
+import model.Epic;
 import model.Status;
+import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private File tempFile;
+    private FileBackedTaskManager taskManager;
 
     @BeforeEach
     public void beforeEach() {
@@ -38,17 +41,43 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     }
 
     @Test
-    public void saveAndLoadSomeTasksToFile() {
-        Task task1 = new Task("Задача 1", "Описание задачи 1", Status.IN_PROGRESS);
-        Task task2 = new Task("Задача 2", "Описание задачи 2", Status.DONE);
-        Task task3 = new Task("Задача 3", "Описание задачи 3", Status.NEW);
-
-        manager.addTask(task1);
-        manager.addTask(task2);
-        manager.addTask(task3);
-
-        assertEquals(manager.getTasks().size(), FileBackedTaskManager.loadFromFile(tempFile).getTasks().size());
+    public void testSaveAndLoadSeveralTasks() {
+        taskManager = new FileBackedTaskManager(tempFile);
+        Task task1 = new Task("Task 1", "Description 1");
+        taskManager.addTask(task1);
+        Epic epic1 = new Epic("Epic 1", "Description 2");
+        taskManager.addEpic(epic1);
+        Subtask subtask1 = new Subtask("Subtask1", "Description 4", Status.NEW, 2);
+        taskManager.addSubtask(subtask1);
+        FileBackedTaskManager taskManager2 = FileBackedTaskManager.loadFromFile(tempFile);
+        List<Task> tasks = taskManager2.getTasks();
+        assertEquals(1, tasks.size());
+        assertEquals(task1, tasks.get(0));
+        assertEquals(task1.getName(), tasks.get(0).getName());
+        assertEquals(task1.getDescription(), tasks.get(0).getDescription());
+        assertEquals(task1.getStatus(), tasks.get(0).getStatus());
+        assertEquals(task1.getStartTime(), tasks.get(0).getStartTime());
+        assertEquals(task1.getDuration(), tasks.get(0).getDuration());
+        List<Epic> epics = taskManager2.getEpics();
+        assertEquals(1, epics.size());
+        assertEquals(epic1, epics.get(0));
+        assertEquals(epic1.getName(), epics.get(0).getName());
+        assertEquals(epic1.getDescription(), epics.get(0).getDescription());
+        assertEquals(epic1.getStatus(), epics.get(0).getStatus());
+        assertEquals(epic1.getSubtaskId(), epics.get(0).getSubtaskId());
+        assertEquals(epic1.getStartTime(), epics.get(0).getStartTime());
+        assertEquals(epic1.getDuration(), epics.get(0).getDuration());
+        List<Subtask> subtasks = taskManager2.getSubtasks();
+        assertEquals(1, subtasks.size());
+        assertEquals(subtask1, subtasks.get(0));
+        assertEquals(subtask1.getName(), subtasks.get(0).getName());
+        assertEquals(subtask1.getDescription(), subtasks.get(0).getDescription());
+        assertEquals(subtask1.getStatus(), subtasks.get(0).getStatus());
+        assertEquals(subtask1.getEpicId(), subtasks.get(0).getEpicId());
+        assertEquals(subtask1.getStartTime(), subtasks.get(0).getStartTime());
+        assertEquals(subtask1.getDuration(), subtasks.get(0).getDuration());
     }
+
 
     @Test
     public void allSubtasksWithStatusNewAndDone() {
