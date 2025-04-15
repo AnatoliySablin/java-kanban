@@ -118,6 +118,8 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
+                ", LocalDateTime=" + startTime +
+                ", Duration=" + duration +
                 '}';
     }
 }

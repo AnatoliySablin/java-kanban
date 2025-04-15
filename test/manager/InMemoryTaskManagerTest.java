@@ -4,13 +4,12 @@ import model.Status;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import exceptions.ManagerValidationException;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     @BeforeEach
@@ -33,10 +32,11 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         Task task2 = new Task("Task2", "description", Status.NEW);
         task2.setStartTime(start2.toLocalDateTime());
         task2.setDuration(Duration.between(start2, end2));
-        ManagerValidationException thrown = assertThrows(ManagerValidationException.class,
-                () -> manager.addTask(task2));
+        manager.addTask(task2);
 
-        assertEquals("Ошибка. Задачи пересекаются по времени выполнения: " + task2, thrown.getMessage());
+        boolean isOverlap = !manager.getPrioritizedTasks().contains(task2);
+
+        assertTrue(isOverlap);
     }
 
     @Test

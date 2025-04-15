@@ -1,8 +1,6 @@
 package model;
 
 import manager.InMemoryTaskManager;
-import model.Status;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -27,9 +25,9 @@ class EpicTest {
         Epic epic = new Epic("Test addNewTask", "Test addNewTask description");
         taskManager.addEpic(epic);
         Subtask subtask1 = new Subtask("Subtask1", "descr", Status.DONE,
-                        LocalDateTime.of(2025, 4, 8, 20, 22 ), Duration.ofMinutes(10), epic.getId());
+                LocalDateTime.of(2025, 4, 8, 20, 22), Duration.ofMinutes(10), epic.getId());
         Subtask subtask2 = new Subtask("Subtask1", "descr", Status.NEW,
-                        LocalDateTime.of(2025, 4, 9, 23, 22 ), Duration.ofMinutes(10), epic.getId());
+                LocalDateTime.of(2025, 4, 9, 23, 22), Duration.ofMinutes(10), epic.getId());
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
 
@@ -44,9 +42,9 @@ class EpicTest {
         Epic epic = new Epic("Test addNewTask", "Test addNewTask description");
         taskManager.addEpic(epic);
         Subtask subtask1 = new Subtask("Subtask1", "descr", Status.NEW,
-                LocalDateTime.of(2025, 4, 8, 20, 22 ), Duration.ofMinutes(10), epic.getId());
+                LocalDateTime.of(2025, 4, 8, 20, 22), Duration.ofMinutes(10), epic.getId());
         Subtask subtask2 = new Subtask("Subtask1", "descr", Status.NEW,
-                LocalDateTime.of(2025, 4, 9, 23, 22 ), Duration.ofMinutes(10), epic.getId());
+                LocalDateTime.of(2025, 4, 9, 23, 22), Duration.ofMinutes(10), epic.getId());
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
 
@@ -59,9 +57,9 @@ class EpicTest {
         Epic epic = new Epic("Test addNewTask", "Test addNewTask description");
         taskManager.addEpic(epic);
         Subtask subtask1 = new Subtask("Subtask1", "descr", Status.DONE,
-                LocalDateTime.of(2025, 4, 8, 20, 22 ), Duration.ofMinutes(10), epic.getId());
+                LocalDateTime.of(2025, 4, 8, 20, 22), Duration.ofMinutes(10), epic.getId());
         Subtask subtask2 = new Subtask("Subtask1", "descr", Status.DONE,
-                LocalDateTime.of(2025, 4, 9, 23, 22 ), Duration.ofMinutes(10), epic.getId());
+                LocalDateTime.of(2025, 4, 9, 23, 22), Duration.ofMinutes(10), epic.getId());
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
 
@@ -91,9 +89,9 @@ class EpicTest {
         Epic epic = new Epic("Test addNewTask", "Test addNewTask description");
         taskManager.addEpic(epic);
         Subtask subtask1 = new Subtask("Subtask1", "descr", Status.IN_PROGRESS,
-                LocalDateTime.of(2025, 4, 8, 20, 22 ), Duration.ofMinutes(10), epic.getId());
+                LocalDateTime.of(2025, 4, 8, 20, 22), Duration.ofMinutes(10), epic.getId());
         Subtask subtask2 = new Subtask("Subtask1", "descr", Status.IN_PROGRESS,
-                LocalDateTime.of(2025, 4, 9, 23, 22 ), Duration.ofMinutes(10), epic.getId());
+                LocalDateTime.of(2025, 4, 9, 23, 22), Duration.ofMinutes(10), epic.getId());
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
 

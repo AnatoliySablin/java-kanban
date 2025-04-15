@@ -9,10 +9,13 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private File tempFile;
@@ -43,11 +46,12 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     @Test
     public void testSaveAndLoadSeveralTasks() {
         taskManager = new FileBackedTaskManager(tempFile);
-        Task task1 = new Task("Task 1", "Description 1");
+        Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, LocalDateTime.now(), Duration.ofMinutes(10));
         taskManager.addTask(task1);
         Epic epic1 = new Epic("Epic 1", "Description 2");
         taskManager.addEpic(epic1);
-        Subtask subtask1 = new Subtask("Subtask1", "Description 4", Status.NEW, 2);
+        Subtask subtask1 = new Subtask("Subtask1", "Description 4", Status.NEW, LocalDateTime.now(),
+                Duration.ofMinutes(15), 2);
         taskManager.addSubtask(subtask1);
         FileBackedTaskManager taskManager2 = FileBackedTaskManager.loadFromFile(tempFile);
         List<Task> tasks = taskManager2.getTasks();

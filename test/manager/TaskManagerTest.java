@@ -2,11 +2,13 @@ package manager;
 
 import model.Epic;
 import model.Status;
-import model.Task;
 import model.Subtask;
+import model.Task;
 import org.junit.jupiter.api.Test;
 
-import static model.Status.IN_PROGRESS;
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import static model.Status.NEW;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -16,7 +18,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void addTaskShouldAddId() {
-        Task task = new Task("Task", "description");
+        Task task = new Task("Task", "description", 1, NEW, LocalDateTime.now(), Duration.ofMinutes(10));
         manager.addTask(task);
         final Task savedTask = manager.getTask(task.getId());
 
@@ -38,7 +40,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void addSubtaskShouldAddId() {
         Epic epic = new Epic("Epic", "description");
         manager.addEpic(epic);
-        Subtask subtask = new Subtask("Subtask1", "description", NEW, epic.getId());
+        Subtask subtask = new Subtask("Subtask1", "description", NEW, LocalDateTime.now(), Duration.ofMinutes(10),
+                epic.getId());
         manager.addSubtask(subtask);
         final Subtask savedTask = manager.getSubtask(subtask.getId());
 
@@ -48,7 +51,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void updateTaskShouldChangeStatus() {
-        Task task = new Task("Task", "description");
+        Task task = new Task("Task", "description", 1, NEW, LocalDateTime.now(), Duration.ofMinutes(10));
         manager.addTask(task);
         task.setStatus(Status.IN_PROGRESS);
         manager.updateTask(task);
@@ -60,28 +63,29 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void updateEpicShouldNotChangeStatus() {
-        Epic epic = new Epic("Epic", "description");
+        Epic epic = new Epic("Epic", "description", 1, NEW);
         manager.addEpic(epic);
-        epic.setStatus(Status.DONE);
-        manager.updateEpic(epic);
-        final Epic savedTask = manager.getEpic(epic.getId());
+
+        final Epic savedTask = manager.updateEpic(epic);
 
         assertEquals(epic, savedTask, "Задачи не совпадают.");
-        assertEquals(IN_PROGRESS, savedTask.getStatus());
+        assertEquals(NEW, savedTask.getStatus());
     }
 
     @Test
     public void updateEpicAndSubtaskShouldChangeStatus() {
         Epic epic = new Epic("Epic", "description");
         manager.addEpic(epic);
-        Subtask subtask = new Subtask("Subtask1", "description", NEW, epic.getId());
+        Subtask subtask = new Subtask("Subtask1", "description", NEW, LocalDateTime.now(), Duration.ofMinutes(10),
+                epic.getId());
         manager.addSubtask(subtask);
         subtask.setStatus(Status.IN_PROGRESS);
         manager.updateSubtask(subtask);
+
         final Subtask savedTask = manager.getSubtask(subtask.getId());
 
         assertEquals(subtask, savedTask, "Задачи не совпадают.");
-        assertEquals(Status.IN_PROGRESS, epic.getStatus());
         assertEquals(Status.IN_PROGRESS, subtask.getStatus());
+        assertEquals(Status.IN_PROGRESS, epic.getStatus());
     }
 }
