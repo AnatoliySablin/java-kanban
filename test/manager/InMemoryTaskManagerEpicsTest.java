@@ -6,10 +6,13 @@ import model.Subtask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static model.Status.NEW;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -30,8 +33,10 @@ public class InMemoryTaskManagerEpicsTest {
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
 
-        subtask1ForEpic1 = new Subtask("Сабтаск1", "Описание1", Status.NEW, epic1.getId());
-        subtask2ForEpic1 = new Subtask("Сабтаск2", "Описание2", Status.NEW, epic1.getId());
+        subtask1ForEpic1 = new Subtask("Subtask1", "description", NEW, LocalDateTime.now(), Duration.ofMinutes(10),
+                epic1.getId());
+        subtask2ForEpic1 = new Subtask("Subtask2", "description", NEW, LocalDateTime.now(), Duration.ofMinutes(10),
+                epic1.getId());
 
         taskManager.addSubtask(subtask1ForEpic1);
         taskManager.addSubtask(subtask2ForEpic1);
@@ -86,7 +91,8 @@ public class InMemoryTaskManagerEpicsTest {
 
     @Test
     public void shouldAddSubtask() {
-        Subtask subtask = new Subtask("name", "desc", Status.NEW, epic1.getId());
+        Subtask subtask = new Subtask("Subtask1", "description", NEW, LocalDateTime.now(), Duration.ofMinutes(10),
+                epic1.getId());
         taskManager.addSubtask(subtask);
 
         assertEquals(taskManager.getSubtask(subtask.getId()), subtask);
