@@ -43,15 +43,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         break;
                     case SUBTASK:
                         String[] lineArr = line.split(",");
-                        Subtask subtask = new Subtask(task.getName(), task.getDescription(), task.getStatus(),
-                                task.getStartTime(), task.getDuration(), Integer.parseInt(lineArr[5]));
+                        Subtask subtask = new Subtask(lineArr[1], lineArr[2], Integer.parseInt(lineArr[3]),
+                                Status.valueOf(lineArr[4]), Integer.parseInt(lineArr[5]),
+                                LocalDateTime.parse(lineArr[6], DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                                Duration.parse(lineArr[7]));
+                        fileBackedTaskManager.subtasks.put(subtask.getId(), subtask);
                         if (subtask.getEndTime().isAfter(task.getEndTime())) {
                             fileBackedTaskManager.epics.get(subtask.getEpicId()).setEndTime(subtask.getEndTime());
                         }
                         subtask.setId(task.getId());
                         int epicId = subtask.getEpicId();
                         if (fileBackedTaskManager.epics.containsKey(epicId)) {
-                            fileBackedTaskManager.subtasks.put(task.getId(), (Subtask) subtask);
                             fileBackedTaskManager.epics.get(epicId).getSubtaskId().add(subtask.getId());
                             prioritizedTasks.add(task);
                         }
@@ -76,7 +78,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 case TASK:
                     Task task = new Task(lineArr[1], lineArr[2], Integer.parseInt(lineArr[3]),
                             Status.valueOf(lineArr[4]), LocalDateTime.parse(lineArr[5],
-                            DateTimeFormatter.ISO_LOCAL_DATE_TIME), Duration.ofMinutes(Integer.parseInt(lineArr[6])));
+                            DateTimeFormatter.ISO_LOCAL_DATE_TIME), Duration.parse(lineArr[6]));
                     task.setId(Integer.parseInt(lineArr[3]));
                     return task;
                 case EPIC:
@@ -85,9 +87,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     epic.setId(Integer.parseInt(lineArr[3]));
                     return epic;
                 case SUBTASK:
-                    Subtask subtask = new Subtask(lineArr[1], lineArr[2], Status.valueOf(lineArr[4]),
-                            LocalDateTime.parse(lineArr[5], DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            Duration.ofMinutes(Integer.parseInt(lineArr[6])), Integer.parseInt(lineArr[3]));
+                    Subtask subtask = new Subtask(lineArr[1], lineArr[2], Integer.parseInt(lineArr[3]),
+                            Status.valueOf(lineArr[4]), Integer.parseInt(lineArr[5]),
+                            LocalDateTime.parse(lineArr[6], DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            Duration.parse(lineArr[7]));
                     subtask.setId(Integer.parseInt(lineArr[3]));
                     return subtask;
                 default:
@@ -209,10 +212,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private String toString(Task task) {
         if (task.getTaskType().equals(TaskType.SUBTASK)) {
-            return String.format("%s,%s,%s,%s,%s,%s\n", task.getTaskType(), task.getName(), task.getDescription(),
-                    task.getStatus(), task.getStartTime(), task.getDuration(), ((Subtask) task).getEpicId());
+            return String.format("%s,%s,%s,%s,%s,%s,%s,%s\n", task.getTaskType(), task.getName(),
+                    task.getDescription(), task.getId(),
+                    task.getStatus(), ((Subtask) task).getEpicId(), task.getStartTime(), task.getDuration());
         } else {
-            return String.format("%s,%s,%s,%s,%s\n", task.getTaskType(), task.getName(), task.getDescription(),
+            return String.format("%s,%s,%s,%s,%s,%s,%s\n", task.getTaskType(), task.getName(), task.getDescription(),
                     task.getId(), task.getStatus(), task.getStartTime(), task.getDuration());
         }
     }

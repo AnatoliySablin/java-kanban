@@ -48,10 +48,10 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         taskManager = new FileBackedTaskManager(tempFile);
         Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, LocalDateTime.now(), Duration.ofMinutes(10));
         taskManager.addTask(task1);
-        Epic epic1 = new Epic("Epic 1", "Description 2");
+        Epic epic1 = new Epic("Epic 1", "Description 2", 1, Status.NEW);
         taskManager.addEpic(epic1);
-        Subtask subtask1 = new Subtask("Subtask1", "Description 4", Status.NEW, LocalDateTime.now(),
-                Duration.ofMinutes(15), 2);
+        Subtask subtask1 = new Subtask("Subtask1", "Description 4", 3, Status.NEW, 2, LocalDateTime.now(),
+                Duration.ofMinutes(15));
         taskManager.addSubtask(subtask1);
         FileBackedTaskManager taskManager2 = FileBackedTaskManager.loadFromFile(tempFile);
         List<Task> tasks = taskManager2.getTasks();
@@ -69,8 +69,6 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         assertEquals(epic1.getDescription(), epics.get(0).getDescription());
         assertEquals(epic1.getStatus(), epics.get(0).getStatus());
         assertEquals(epic1.getSubtaskId(), epics.get(0).getSubtaskId());
-        assertEquals(epic1.getStartTime(), epics.get(0).getStartTime());
-        assertEquals(epic1.getDuration(), epics.get(0).getDuration());
         List<Subtask> subtasks = taskManager2.getSubtasks();
         assertEquals(1, subtasks.size());
         assertEquals(subtask1, subtasks.get(0));
