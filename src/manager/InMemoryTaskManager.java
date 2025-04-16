@@ -320,7 +320,7 @@ public class InMemoryTaskManager implements TaskManager {
                     .map(this::getSubtask)
                     .max(Comparator.comparing(Subtask::getEndTime))
                     .orElseThrow();
-            epic.setEndTime(maxSubtask.getStartTime());
+            epic.setEndTime(maxSubtask.getEndTime());
 
             if (Optional.ofNullable(epic.getStartTime()).isPresent()
                     && Optional.ofNullable(epic.getEndTime()).isPresent()) {
