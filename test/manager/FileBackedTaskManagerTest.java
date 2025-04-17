@@ -46,11 +46,13 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     @Test
     public void testSaveAndLoadSeveralTasks() {
         taskManager = new FileBackedTaskManager(tempFile);
-        Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, LocalDateTime.now(), Duration.ofMinutes(10));
+        Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, LocalDateTime.of(2025, 4, 17, 19, 40),
+                Duration.ofMinutes(10));
         taskManager.addTask(task1);
         Epic epic1 = new Epic("Epic 1", "Description 2", 1, Status.NEW);
         taskManager.addEpic(epic1);
-        Subtask subtask1 = new Subtask("Subtask1", "Description 4", 3, Status.NEW, 2, LocalDateTime.now(),
+        Subtask subtask1 = new Subtask("Subtask1", "Description 4", 3, Status.NEW, 2, LocalDateTime.of(2025, 4, 17,
+                20, 40),
                 Duration.ofMinutes(15));
         taskManager.addSubtask(subtask1);
         FileBackedTaskManager taskManager2 = FileBackedTaskManager.loadFromFile(tempFile);
@@ -69,6 +71,8 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         assertEquals(epic1.getDescription(), epics.get(0).getDescription());
         assertEquals(epic1.getStatus(), epics.get(0).getStatus());
         assertEquals(epic1.getSubtaskId(), epics.get(0).getSubtaskId());
+        assertEquals(epic1.getStartTime(), epics.get(0).getStartTime());
+        assertEquals(epic1.getEndTime(), epics.get(0).getEndTime());
         List<Subtask> subtasks = taskManager2.getSubtasks();
         assertEquals(1, subtasks.size());
         assertEquals(subtask1, subtasks.get(0));
@@ -78,6 +82,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         assertEquals(subtask1.getEpicId(), subtasks.get(0).getEpicId());
         assertEquals(subtask1.getStartTime(), subtasks.get(0).getStartTime());
         assertEquals(subtask1.getDuration(), subtasks.get(0).getDuration());
+        assertEquals(taskManager.getPrioritizedTasks(), taskManager2.getPrioritizedTasks());
     }
 
 

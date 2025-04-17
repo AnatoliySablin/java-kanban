@@ -8,11 +8,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private static final String CSV = "id,type,name,status,description,LocalDataTime, Duration, epic \n";
+    private static final String CSV = "id,type,name,status,description,starttime,duration,epic \n";
     protected File file;
 
     public FileBackedTaskManager(File file) {
@@ -24,8 +25,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try (BufferedReader bf = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             bf.readLine();
             ArrayList<Integer> id = new ArrayList<>();
-            Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
-                    Comparator.nullsLast(Comparator.naturalOrder())));
             while (bf.ready()) {
                 String line = bf.readLine();
                 if (line.isEmpty()) {
@@ -39,24 +38,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         break;
                     case TASK:
                         fileBackedTaskManager.tasks.put(task.getId(), (Task) task);
-                        prioritizedTasks.add(task);
+                        fileBackedTaskManager.prioritizedTasks.add(task);
                         break;
                     case SUBTASK:
                         String[] lineArr = line.split(",");
-                        Subtask subtask = new Subtask(lineArr[1], lineArr[2], Integer.parseInt(lineArr[3]),
-                                Status.valueOf(lineArr[4]), Integer.parseInt(lineArr[5]),
-                                LocalDateTime.parse(lineArr[6], DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                                Duration.parse(lineArr[7]));
+                        Subtask subtask = new Subtask(task.getName(), task.getDescription(), task.getId(),
+                                task.getStatus(), Integer.parseInt(lineArr[5]),
+                                task.getStartTime(), task.getDuration());
                         fileBackedTaskManager.subtasks.put(subtask.getId(), subtask);
-                        if (subtask.getEndTime().isAfter(task.getEndTime())) {
-                            fileBackedTaskManager.epics.get(subtask.getEpicId()).setEndTime(subtask.getEndTime());
-                        }
                         subtask.setId(task.getId());
                         int epicId = subtask.getEpicId();
                         if (fileBackedTaskManager.epics.containsKey(epicId)) {
                             fileBackedTaskManager.epics.get(epicId).getSubtaskId().add(subtask.getId());
-                            prioritizedTasks.add(task);
+                            if (subtask.getStartTime().isBefore(fileBackedTaskManager.epics.get(subtask.getEpicId()).getStartTime())) {
+                                fileBackedTaskManager.epics.get(subtask.getEpicId()).setStartTime(subtask.getStartTime());
+                            }
+                            if (fileBackedTaskManager.epics.get(subtask.getEpicId()).getEndTime() != null) {
+                                if (subtask.getEndTime().isAfter(fileBackedTaskManager.epics.get(subtask.getEpicId()).getEndTime())) {
+                                    fileBackedTaskManager.epics.get(subtask.getEpicId()).setEndTime(subtask.getEndTime());
+                                }
+                            } else {
+                                fileBackedTaskManager.epics.get(subtask.getEpicId()).setEndTime(subtask.getEndTime());
+                            }
                         }
+                        fileBackedTaskManager.prioritizedTasks.add(task);
                         break;
                 }
             }
@@ -85,6 +90,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Epic epic = new Epic(lineArr[1], lineArr[2]);
                     epic.setStatus(Status.valueOf(lineArr[4]));
                     epic.setId(Integer.parseInt(lineArr[3]));
+                    epic.setStartTime(LocalDateTime.parse(lineArr[5]));
+                    epic.setDuration(Duration.parse(lineArr[6]));
                     return epic;
                 case SUBTASK:
                     Subtask subtask = new Subtask(lineArr[1], lineArr[2], Integer.parseInt(lineArr[3]),
