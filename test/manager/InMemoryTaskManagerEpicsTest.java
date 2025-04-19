@@ -20,26 +20,28 @@ public class InMemoryTaskManagerEpicsTest {
     private TaskManager taskManager;
     private Epic epic1;
     private Epic epic2;
-    private Subtask subtask1ForEpic1;
-    private Subtask subtask2ForEpic1;
+    private Subtask subtask1;
+    private Subtask subtask2;
 
     @BeforeEach
     public void preparing() {
         taskManager = new InMemoryTaskManager();
 
-        epic1 = new Epic("Эпик1", "Описание1");
-        epic2 = new Epic("Эпик2", "Описание2");
+        epic1 = new Epic("Эпик1", "Описание1", 1, Status.NEW);
+        epic2 = new Epic("Эпик2", "Описание2", 2, Status.NEW);
 
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
 
-        subtask1ForEpic1 = new Subtask("Subtask1", "description", NEW, LocalDateTime.now(), Duration.ofMinutes(10),
-                epic1.getId());
-        subtask2ForEpic1 = new Subtask("Subtask2", "description", NEW, LocalDateTime.now(), Duration.ofMinutes(10),
-                epic1.getId());
+        Subtask subtask1 = new Subtask("Subtask1", "Description 1", Status.NEW, LocalDateTime.of(2025, 4, 17,
+                20, 40),
+                Duration.ofMinutes(15), epic1.getId());
+        Subtask subtask2 = new Subtask("Subtask2", "Description 2", Status.NEW, LocalDateTime.of(2025, 4, 17,
+                21, 40),
+                Duration.ofMinutes(15), epic1.getId());
 
-        taskManager.addSubtask(subtask1ForEpic1);
-        taskManager.addSubtask(subtask2ForEpic1);
+        taskManager.addSubtask(subtask1);
+        taskManager.addSubtask(subtask2);
 
     }
 
@@ -50,7 +52,7 @@ public class InMemoryTaskManagerEpicsTest {
 
     @Test
     public void twoSubtasksWithSameIdShouldBeEquals() {
-        assertEquals(subtask1ForEpic1, taskManager.getSubtask(subtask1ForEpic1.getId()));
+        assertEquals(subtask1, taskManager.getSubtask(subtask1.getId()));
     }
 
     @Test
@@ -65,8 +67,8 @@ public class InMemoryTaskManagerEpicsTest {
     public void shouldReturnArrayOfSubtasks() {
         List<Subtask> subtasks = taskManager.getSubtasks();
         List<Subtask> subtasks1 = new ArrayList<>(Arrays.asList
-                (subtask1ForEpic1,
-                        subtask2ForEpic1));
+                (subtask1,
+                        subtask2));
 
         assertEquals(subtasks, subtasks1);
     }
@@ -78,7 +80,7 @@ public class InMemoryTaskManagerEpicsTest {
 
     @Test
     public void shouldReturnSubtaskByItsId() {
-        assertEquals(taskManager.getSubtask(subtask1ForEpic1.getId()), subtask1ForEpic1);
+        assertEquals(subtask1, taskManager.getSubtask(subtask1.getId()));
     }
 
     @Test
@@ -100,7 +102,7 @@ public class InMemoryTaskManagerEpicsTest {
 
     @Test
     public void shouldUpdateEpicStatusWithChangingSubtasksStatus() {
-        Subtask subtask = taskManager.getSubtask(subtask1ForEpic1.getId());
+        Subtask subtask = taskManager.getSubtask(subtask1.getId());
         subtask.setStatus(Status.IN_PROGRESS);
         taskManager.updateSubtask(subtask);
         //Переделать

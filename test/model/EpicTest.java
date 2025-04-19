@@ -30,7 +30,6 @@ class EpicTest {
                 LocalDateTime.of(2025, 4, 8, 20, 30), Duration.ofMinutes(10), epic.getId());
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
-        taskManager.lifespanOfEpic(epic);
 
         assertEquals(subtask2.getEndTime(), epic.getEndTime(), "Неверное время завершения эпика");
         assertEquals(subtask1.getStartTime(), epic.getStartTime(), "Неверное время начала эпика");

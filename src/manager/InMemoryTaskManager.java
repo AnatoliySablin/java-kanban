@@ -59,14 +59,14 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask != null) {
             int epicId = subtask.getEpicId();
             if (epics.containsKey(epicId)) {
-                subtask.setId(getCount());
-                subtasks.put(subtask.getId(), subtask);
                 if (validator(subtask)) {
+                    subtask.setId(getCount());
+                    subtasks.put(subtask.getId(), subtask);
                     prioritizedTasks.add(subtask);
+                    epics.get(epicId).getSubtaskId().add(subtask.getId());
+                    lifespanOfEpic(epics.get(epicId));
+                    updateStatus(epicId);
                 }
-                epics.get(epicId).getSubtaskId().add(subtask.getId());
-                lifespanOfEpic(epics.get(epicId));
-                updateStatus(epicId);
             }
             return subtask.getId();
         } else {
@@ -99,8 +99,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean clearEpicList() {
         if (!epics.isEmpty()) {
-            List<Integer> epicIds = new ArrayList<>(epics.keySet());
-            epicIds.stream().forEach(this::deleteEpic);
+            List<Integer> epicID = new ArrayList<>(epics.keySet());
+            epicID.forEach(this::deleteEpic);
             return true;
         }
         return false;
@@ -116,7 +116,7 @@ public class InMemoryTaskManager implements TaskManager {
             });
 
             List<Integer> keys = new ArrayList<>(subtasks.keySet());
-            keys.forEach(this::deleteSubtask);
+            keys.forEach(subtasks::remove);
 
             return true;
         }
@@ -206,10 +206,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (task != null) {
             int id = task.getId();
             if (tasks.containsKey(id)) {
-                tasks.put(task.getId(), task);
                 if (validator(task)) {
                     prioritizedTasks.remove(tasks.get(id));
                     prioritizedTasks.add(task);
+                    tasks.put(task.getId(), task);
                 }
                 return task;
             }
@@ -236,11 +236,11 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask != null) {
             int id = subtask.getId();
             if (subtasks.containsKey(id)) {
-                subtasks.put(id, subtask);
-                updateStatus(subtask.getEpicId());
                 if (validator(subtask)) {
                     prioritizedTasks.remove(subtasks.get(id));
                     prioritizedTasks.add(subtask);
+                    subtasks.put(id, subtask);
+                    updateStatus(subtask.getEpicId());
                     lifespanOfEpic(epics.get(subtask.getEpicId()));
                 }
                 return subtask;
@@ -299,7 +299,7 @@ public class InMemoryTaskManager implements TaskManager {
         return epicStatus;
     }
 
-    public void lifespanOfEpic(Epic epic) {
+    protected void lifespanOfEpic(Epic epic) {
         if (!epic.getSubtaskId().isEmpty()) {
             final Subtask minSubtask = (Subtask) epic.getSubtaskId().stream()
                     .map(this::getSubtask)
@@ -351,6 +351,7 @@ public class InMemoryTaskManager implements TaskManager {
                 });
     }
 
+    @Override
     public List<Task> getPrioritizedTasks() {
         return new ArrayList<>(prioritizedTasks);
     }
