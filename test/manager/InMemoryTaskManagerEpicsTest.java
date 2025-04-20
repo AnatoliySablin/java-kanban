@@ -33,10 +33,10 @@ public class InMemoryTaskManagerEpicsTest {
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
 
-        Subtask subtask1 = new Subtask("Subtask1", "Description 1", Status.NEW, LocalDateTime.of(2025, 4, 17,
+        subtask1 = new Subtask("Subtask1", "Description 1", Status.NEW, LocalDateTime.of(2025, 4, 17,
                 20, 40),
                 Duration.ofMinutes(15), epic1.getId());
-        Subtask subtask2 = new Subtask("Subtask2", "Description 2", Status.NEW, LocalDateTime.of(2025, 4, 17,
+        subtask2 = new Subtask("Subtask2", "Description 2", Status.NEW, LocalDateTime.of(2025, 4, 17,
                 21, 40),
                 Duration.ofMinutes(15), epic1.getId());
 
