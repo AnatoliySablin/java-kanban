@@ -1,5 +1,7 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -7,17 +9,29 @@ public class Task {
     protected String description;
     protected int id;
     protected Status status = Status.NEW;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
     public Task(String task, String description) {
         this.name = task;
         this.description = description;
     }
 
-    public Task(String task, String description, int id, Status status) {
+    public Task(String task, String description, int id, Status status, LocalDateTime startTime, Duration duration) {
         this.name = task;
         this.description = description;
         this.id = id;
         this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
+    public Task(String task, String description, Status status, LocalDateTime startTime, Duration duration) {
+        this.name = task;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     public Task(String task, String description, Status status) {
@@ -62,11 +76,34 @@ public class Task {
         return TaskType.TASK;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return id == task.id;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
+        return startTime.plus(duration);
     }
 
     @Override
@@ -81,6 +118,8 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
+                ", LocalDateTime=" + startTime +
+                ", Duration=" + duration +
                 '}';
     }
 }

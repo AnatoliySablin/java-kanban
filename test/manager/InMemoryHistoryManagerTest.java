@@ -1,6 +1,7 @@
 package manager;
 
 import model.Epic;
+import model.Status;
 import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,7 @@ public class InMemoryHistoryManagerTest {
         task.setId(0);
         epic = new Epic("Epic", "Описание");
         epic.setId(1);
-        subtask = new Subtask("Subtask", "Описание", 1);
+        subtask = new Subtask("Subtask", "Описание", Status.NEW, 1);
         subtask.setId(2);
         history = new ArrayList<>();
         historyManager = new InMemoryHistoryManager();

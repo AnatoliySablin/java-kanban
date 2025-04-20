@@ -1,73 +1,59 @@
 package manager;
 
-import model.Epic;
-import model.Subtask;
+import model.Status;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.time.Duration;
+import java.time.ZonedDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class InMemoryTaskManagerTest {
-
-    private TaskManager taskManager;
-
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     @BeforeEach
     public void beforeEach() {
-        taskManager = Managers.getDefault();
+        super.manager = (InMemoryTaskManager) Managers.getDefault();
     }
 
     @Test
-    void addNewTask() {
-        final Task task = new Task("Test addNewTask", "Test addNewTask description");
-        taskManager.addTask(task);
-        final Task savedTask = taskManager.getTask(task.getId());
-        assertNotNull(savedTask, "Задача не найдена.");
-        assertEquals(task, savedTask, "Задачи не совпадают.");
+    public void intervalsOverlap() {
+        ZonedDateTime start1 = ZonedDateTime.now();
+        ZonedDateTime end1 = start1.plusHours(1);
+        ZonedDateTime start2 = ZonedDateTime.now();
+        ZonedDateTime end2 = start2.plusHours(1);
 
-        final List<Task> tasks = taskManager.getTasks();
-        assertNotNull(tasks, "Задачи не возвращаются.");
-        assertEquals(1, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.getFirst(), "Задачи не совпадают.");
+        Task task1 = new Task("Task1", "description", Status.NEW);
+        task1.setStartTime(start1.toLocalDateTime());
+        task1.setDuration(Duration.between(start1.toLocalDateTime(), end1.toLocalDateTime()));
+        manager.addTask(task1);
+
+        Task task2 = new Task("Task2", "description", Status.NEW);
+        task2.setStartTime(start2.toLocalDateTime());
+        task2.setDuration(Duration.between(start2, end2));
+        manager.addTask(task2);
+
+        boolean isOverlap = !manager.getPrioritizedTasks().contains(task2);
+
+        assertTrue(isOverlap);
     }
 
     @Test
-    void addNewEpicAndSubtasks() {
-        final Epic flatRenovation = new Epic("Сделать ремонт",
-                "Нужно успеть за отпуск");
-        taskManager.addEpic(flatRenovation);
-        final Subtask flatRenovationSubtask1 = new Subtask("Поклеить обои",
-                "Обязательно светлые!", flatRenovation.getId());
-        taskManager.addSubtask(flatRenovationSubtask1);
-        final Subtask flatRenovationSubtask2 = new Subtask("Установить новую технику",
-                "Старую продать на Авито", flatRenovation.getId());
-        taskManager.addSubtask(flatRenovationSubtask2);
-        final Subtask flatRenovationSubtask3 = new Subtask("Заказать книжный шкаф", "Из темного дерева",
-                flatRenovation.getId());
-        taskManager.addSubtask(flatRenovationSubtask3);
-        final Epic savedEpic = taskManager.getEpic(flatRenovation.getId());
-        final Subtask savedSubtask1 = taskManager.getSubtask(flatRenovationSubtask1.getId());
-        final Subtask savedSubtask2 = taskManager.getSubtask(flatRenovationSubtask2.getId());
-        final Subtask savedSubtask3 = taskManager.getSubtask(flatRenovationSubtask3.getId());
-        assertNotNull(savedEpic, "Эпик не найден.");
-        assertNotNull(savedSubtask2, "Подзадача не найдена.");
-        assertEquals(flatRenovation, savedEpic, "Эпики не совпадают.");
-        assertEquals(flatRenovationSubtask1, savedSubtask1, "Подзадачи не совпадают.");
-        assertEquals(flatRenovationSubtask3, savedSubtask3, "Подзадачи не совпадают.");
+    public void intervalsNotOverlap() {
+        ZonedDateTime start1 = ZonedDateTime.now();
+        ZonedDateTime end1 = start1.plusHours(1);
+        ZonedDateTime start2 = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime end2 = start2.plusHours(1);
 
-        final List<Epic> epics = taskManager.getEpics();
-        assertNotNull(epics, "Эпики не возвращаются.");
-        assertEquals(1, epics.size(), "Неверное количество эпиков.");
-        assertEquals(flatRenovation, epics.getFirst(), "Эпики не совпадают.");
+        Task task1 = new Task("Task1", "description", Status.NEW);
+        task1.setStartTime(start1.toLocalDateTime());
+        task1.setDuration(Duration.between(start1, end1));
+        manager.addTask(task1);
 
-        final List<Subtask> subtasks = taskManager.getSubtasks();
-        assertNotNull(subtasks, "Подзадачи не возвращаются.");
-        assertEquals(3, subtasks.size(), "Неверное количество подзадач.");
-        assertEquals(savedSubtask1, subtasks.getFirst(), "Подзадачи не совпадают.");
+        Task task2 = new Task("Task2", "description", Status.NEW);
+        task2.setStartTime(start2.toLocalDateTime());
+        task2.setDuration(Duration.between(start2, end2));
+        assertDoesNotThrow(() -> manager.addTask(task2));
     }
-
-
 }

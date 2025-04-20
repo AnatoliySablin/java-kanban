@@ -1,7 +1,6 @@
 package manager;
 
 import model.Epic;
-import model.Status;
 import model.Subtask;
 import model.Task;
 
@@ -48,5 +47,5 @@ public interface TaskManager {
 
     List<Subtask> getEpicSubtasks(int epicId);
 
-    List<Status> getSubtaskStatusesList(int epicId);
+    List<Task> getPrioritizedTasks();
 }
