@@ -115,9 +115,11 @@ public class InMemoryTaskManager implements TaskManager {
                 lifespanOfEpic(epic);
             });
 
-            List<Integer> keys = new ArrayList<>(subtasks.keySet());
-            keys.forEach(subtasks::remove);
-
+            subtasks.values().forEach(s -> {
+                prioritizedTasks.remove(s);
+                historyManager.remove(s.getId());
+            });
+            subtasks.clear();
             return true;
         }
         return false;

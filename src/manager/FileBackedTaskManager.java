@@ -46,7 +46,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                                 task.getStatus(),
                                 Integer.parseInt(lineArr[7]), task.getStartTime(), task.getDuration());
                         fileBackedTaskManager.subtasks.put(subtask.getId(), subtask);
-                        subtask.setId(task.getId());
                         int epicId = subtask.getEpicId();
                         if (fileBackedTaskManager.epics.containsKey(epicId)) {
                             fileBackedTaskManager.epics.get(epicId).getSubtaskId().add(subtask.getId());
