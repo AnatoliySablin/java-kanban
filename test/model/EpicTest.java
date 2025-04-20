@@ -27,13 +27,13 @@ class EpicTest {
         Subtask subtask1 = new Subtask("Subtask1", "descr", Status.DONE,
                 LocalDateTime.of(2025, 4, 8, 20, 20), Duration.ofMinutes(10), epic.getId());
         Subtask subtask2 = new Subtask("Subtask1", "descr", Status.NEW,
-                LocalDateTime.of(2025, 4, 8, 20, 30), Duration.ofMinutes(10), epic.getId());
+                LocalDateTime.of(2025, 4, 8, 21, 30), Duration.ofMinutes(10), epic.getId());
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
 
-        assertEquals(subtask2.getEndTime(), epic.getEndTime(), "Неверное время завершения эпика");
         assertEquals(subtask1.getStartTime(), epic.getStartTime(), "Неверное время начала эпика");
         assertEquals(Duration.ofMinutes(20), epic.getDuration(), "Неверная продолжительность эпика");
+        assertEquals(subtask2.getEndTime(), epic.getEndTime(), "Неверное время завершения эпика");
     }
 
     @Test
