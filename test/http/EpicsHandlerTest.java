@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import manager.InMemoryTaskManager;
 import manager.TaskManager;
 import model.Epic;
+import model.Status;
 import model.Subtask;
 import model.Task;
 import model.adapters.DurationAdapter;
@@ -78,7 +79,8 @@ public class EpicsHandlerTest {
         HttpRequest request;
         HttpResponse<String> response;
 
-        Task task1 = new Task("Task1", "description", NEW);
+        Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, LocalDateTime.of(2025, 4, 17, 19, 40),
+                Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPostTask)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task1)))
@@ -196,7 +198,9 @@ public class EpicsHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Subtask subtask1 = new Subtask("Subtask1", "description", NEW, 1);
+        Subtask subtask1 = new Subtask("Subtask1", "description", NEW, LocalDateTime.of(2025, 4, 17, 19, 40),
+                Duration.ofMinutes(10),
+                epic.getId());
         request = HttpRequest.newBuilder()
                 .uri(urlPostSubtask)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(subtask1)))
@@ -204,7 +208,9 @@ public class EpicsHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Subtask subtask2 = new Subtask("Subtask2", "description", NEW, 1);
+        Subtask subtask2 = new Subtask("Subtask2", "description", NEW, LocalDateTime.of(2025, 4, 17, 19, 50),
+                Duration.ofMinutes(10),
+                epic.getId());
         request = HttpRequest.newBuilder()
                 .uri(urlPostSubtask)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(subtask2)))
@@ -213,7 +219,7 @@ public class EpicsHandlerTest {
         assertEquals(201, response.statusCode());
 
 
-        URI urlGet = URI.create("http://localhost:8080/epics/" + taskId + "/subtasks");
+        URI urlGet = URI.create("http://localhost:8080/subtasks");
         request = HttpRequest.newBuilder()
                 .uri(urlGet)
                 .GET()

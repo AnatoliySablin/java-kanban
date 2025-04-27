@@ -64,7 +64,9 @@ public class SubtasksHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Subtask subtask1 = new Subtask("Subtask1", "description", NEW, 1);
+        Subtask subtask1 = new Subtask("Subtask1", "description", NEW, LocalDateTime.of(2025, 4, 17, 19, 40),
+                Duration.ofMinutes(10),
+                epic.getId());
         request = HttpRequest.newBuilder()
                 .uri(urlPostSubtask)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(subtask1)))
@@ -72,7 +74,9 @@ public class SubtasksHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Subtask subtask2 = new Subtask("Subtask2", "description", NEW, 1);
+        Subtask subtask2 = new Subtask("Subtask2", "description", NEW, LocalDateTime.of(2025, 4, 17, 19, 50),
+                Duration.ofMinutes(10),
+                epic.getId());
         request = HttpRequest.newBuilder()
                 .uri(urlPostSubtask)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(subtask2)))
@@ -96,7 +100,9 @@ public class SubtasksHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Subtask subtask1 = new Subtask("Subtask1", "description", NEW, 1);
+        Subtask subtask1 = new Subtask("Subtask1", "description", NEW, LocalDateTime.of(2025, 4, 17, 19, 40),
+                Duration.ofMinutes(10),
+                epic.getId());
         request = HttpRequest.newBuilder()
                 .uri(urlPostSubtask)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(subtask1)))
@@ -104,7 +110,9 @@ public class SubtasksHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Subtask subtask2 = new Subtask("Subtask2", "description", NEW, 1);
+        Subtask subtask2 = new Subtask("Subtask2", "description", NEW, LocalDateTime.of(2025, 4, 17, 19, 50),
+                Duration.ofMinutes(10),
+                epic.getId());
         request = HttpRequest.newBuilder()
                 .uri(urlPostSubtask)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(subtask2)))

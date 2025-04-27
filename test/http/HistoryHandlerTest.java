@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import manager.InMemoryTaskManager;
 import manager.TaskManager;
+import model.Status;
 import model.Task;
 import model.adapters.DurationAdapter;
 import model.adapters.LocalDateTimeAdapter;
@@ -21,7 +22,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static model.Status.NEW;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -56,7 +56,8 @@ public class HistoryHandlerTest {
         HttpRequest request;
         HttpResponse<String> response;
 
-        Task task1 = new Task("Task1", "description", NEW);
+        Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, LocalDateTime.of(2025, 4, 17, 19, 40),
+                Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPost)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task1)))
@@ -64,7 +65,8 @@ public class HistoryHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Task task2 = new Task("Task2", "description", NEW);
+        Task task2 = new Task("Task 1", "Description 1", 1, Status.NEW, LocalDateTime.of(2025, 4, 17, 19, 30),
+                Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPost)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task2)))
@@ -72,7 +74,8 @@ public class HistoryHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Task task3 = new Task("Task3", "description", NEW);
+        Task task3 = new Task("Task 1", "Description 1", 1, Status.NEW, LocalDateTime.of(2025, 4, 17, 19, 50),
+                Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPost)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task3)))

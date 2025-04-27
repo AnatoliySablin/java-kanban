@@ -61,7 +61,9 @@ public class PrioritizedHandlerTest {
         LocalDateTime start2 = LocalDateTime.now().plusDays(1);
         LocalDateTime end2 = start2.plusHours(1);
 
-        Task task0 = new Task("Task0", "description", NEW);
+        Task task0 = new Task("Task0", "description", 1, NEW, LocalDateTime.of(2025, 4, 17, 19, 30),
+                Duration.ofMinutes(10));
+        manager.addTask(task0);
         request = HttpRequest.newBuilder()
                 .uri(urlPost)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task0)))
@@ -101,7 +103,7 @@ public class PrioritizedHandlerTest {
         List<Task> expectList = manager.getPrioritizedTasks();
         List<Task> actualList = gson.fromJson(response.body(), new TaskListTypeToken().getType());
 
-        assertEquals(2, actualList.size());
+        assertEquals(3, actualList.size());
         for (int i = 0; i < actualList.size(); i++) {
             Task actualTask = actualList.get(i);
             Task expectTask = expectList.get(i);

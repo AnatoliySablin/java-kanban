@@ -3,7 +3,6 @@ package http;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
-import exceptions.ManagerValidationException;
 import exceptions.NotFoundException;
 import manager.TaskManager;
 import model.Task;
@@ -91,11 +90,11 @@ public abstract class BaseHttpHandler<T extends Task> {
         InputStream inputStream = exchange.getRequestBody();
         String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         Task task = gson.fromJson(body, type);
-        try {
-            getManagers().addTask(task);
-            sendText(exchange, 201, gson.toJson(task));
-        } catch (ManagerValidationException ex) {
+        int result = getManagers().addTask(task);
+        if (result == -1) {
             sendHasInteractions(exchange);
+        } else {
+            sendText(exchange, 201, gson.toJson(task));
         }
     }
 
@@ -115,6 +114,7 @@ public abstract class BaseHttpHandler<T extends Task> {
         httpExchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         httpExchange.sendResponseHeaders(code, resp.length);
         httpExchange.getResponseBody().write(resp);
+        httpExchange.close();
     }
 
     protected void sendBadRequest(HttpExchange httpExchange) throws IOException {

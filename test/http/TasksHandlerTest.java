@@ -52,7 +52,8 @@ public class TasksHandlerTest {
     @Test
     public void makeTaskShouldAddOneTaskWith201() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8080/tasks");
-        Task task = new Task("Task", "description", NEW);
+        Task task = new Task("Task", "description", 2, NEW, LocalDateTime.of(2025, 4, 17, 19, 30),
+                Duration.ofMinutes(10));
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task)))
@@ -107,7 +108,8 @@ public class TasksHandlerTest {
         HttpRequest request;
         HttpResponse<String> response;
 
-        Task task1 = new Task("Task1", "description", NEW);
+        Task task1 = new Task("Task1", "description", 2, NEW, LocalDateTime.of(2025, 4, 17, 19, 30),
+                Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPost)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task1)))
@@ -115,7 +117,8 @@ public class TasksHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Task task2 = new Task("Task2", "description", NEW);
+        Task task2 = new Task("Task2", "description", 2, NEW, LocalDateTime.of(2025, 4, 17, 19, 40),
+                Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPost)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task2)))
@@ -151,7 +154,8 @@ public class TasksHandlerTest {
         HttpResponse<String> response;
         int taskId = 1;
 
-        Task task1 = new Task("Task1", "description", NEW);
+        Task task1 = new Task("Task1", "description", 2, NEW, LocalDateTime.of(2025, 4, 17, 19, 30),
+                Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPost)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task1)))
@@ -159,7 +163,8 @@ public class TasksHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Task task2 = new Task("Task2", "description", NEW);
+        Task task2 = new Task("Task2", "description", 2, NEW, LocalDateTime.of(2025, 4, 17, 19, 40),
+                Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPost)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task2)))
@@ -190,7 +195,8 @@ public class TasksHandlerTest {
         HttpRequest request;
         HttpResponse<String> response;
 
-        Task task1 = new Task("Task1", "description", NEW);
+        Task task1 = new Task("Task1", "description", 1, NEW, LocalDateTime.of(2025, 4, 17, 19, 30),
+                Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPost)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task1)))
@@ -198,7 +204,9 @@ public class TasksHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        URI urlGet = URI.create("http://localhost:8080/tasks/2");
+        int createdId = gson.fromJson(response.body(), Task.class).getId();
+
+        URI urlGet = URI.create("http://localhost:8080/tasks/" + (createdId + 1));
         request = HttpRequest.newBuilder()
                 .uri(urlGet)
                 .GET()
@@ -213,7 +221,8 @@ public class TasksHandlerTest {
         HttpRequest request;
         HttpResponse<String> response;
 
-        Task task1 = new Task("Task1", "description", NEW);
+        Task task1 = new Task("Task1", "description", 1, NEW, LocalDateTime.of(2025, 4, 17, 19, 30),
+                Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPost)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task1)))
