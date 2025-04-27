@@ -14,13 +14,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 public abstract class BaseHttpHandler<T extends Task> {
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Duration.class, new DurationAdapter())
-            .registerTypeAdapter(ZonedDateTime.class, new LocalDateTimeAdapter())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .setPrettyPrinting()
             .create();
     private final TaskManager managers;
@@ -115,7 +116,6 @@ public abstract class BaseHttpHandler<T extends Task> {
         httpExchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         httpExchange.sendResponseHeaders(code, resp.length);
         httpExchange.getResponseBody().write(resp);
-        httpExchange.close();
     }
 
     protected void sendBadRequest(HttpExchange httpExchange) throws IOException {
