@@ -65,7 +65,7 @@ public class HistoryHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Task task2 = new Task("Task 2", "Description 1", 1, Status.NEW, LocalDateTime.of(2025, 4, 17, 19, 30),
+        Task task2 = new Task("Task 2", "Description 1", 2, Status.NEW, LocalDateTime.of(2025, 4, 17, 19, 30),
                 Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPost)
@@ -74,7 +74,7 @@ public class HistoryHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        Task task3 = new Task("Task 3", "Description 1", 1, Status.NEW, LocalDateTime.of(2025, 4, 17, 19, 50),
+        Task task3 = new Task("Task 3", "Description 1", 3, Status.NEW, LocalDateTime.of(2025, 4, 17, 19, 50),
                 Duration.ofMinutes(10));
         request = HttpRequest.newBuilder()
                 .uri(urlPost)

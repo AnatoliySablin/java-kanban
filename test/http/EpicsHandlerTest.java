@@ -73,14 +73,13 @@ public class EpicsHandlerTest {
 
     @Test
     public void getEpicShouldGetAllEpicWith200() throws IOException, InterruptedException {
-        URI urlPostTask = URI.create("http://localhost:8080/tasks");
         URI urlPostEpic = URI.create("http://localhost:8080/epics");
         HttpRequest request;
         HttpResponse<String> response;
 
         Epic epic1 = new Epic("Epic1", "description", 1, NEW);
         request = HttpRequest.newBuilder()
-                .uri(urlPostTask)
+                .uri(urlPostEpic)
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(epic1)))
                 .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
