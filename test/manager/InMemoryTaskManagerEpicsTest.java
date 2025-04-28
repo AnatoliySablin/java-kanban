@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.NotFoundException;
 import model.Epic;
 import model.Status;
 import model.Subtask;
@@ -13,8 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static model.Status.NEW;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InMemoryTaskManagerEpicsTest {
     private TaskManager taskManager;
@@ -105,15 +105,16 @@ public class InMemoryTaskManagerEpicsTest {
         Subtask subtask = taskManager.getSubtask(subtask1.getId());
         subtask.setStatus(Status.IN_PROGRESS);
         taskManager.updateSubtask(subtask);
-        //Переделать
         assertEquals(Status.IN_PROGRESS, taskManager.getEpic(epic1.getId()).getStatus());
     }
 
     @Test
-    public void shouldReturnNullAfterDeleteEpic() {
+    public void shouldThrowNotFoundExceptionAfterDeleteEpic() {
         taskManager.deleteEpic(epic1.getId());
 
-        assertNull(taskManager.getEpic(epic1.getId()));
+        assertThrows(NotFoundException.class, () -> {
+            taskManager.getEpic(epic1.getId());
+        });
     }
 
     @Test
@@ -121,6 +122,7 @@ public class InMemoryTaskManagerEpicsTest {
         Subtask subtask = taskManager.getSubtasks().get(0);
         taskManager.deleteSubtask(subtask.getId());
 
-        assertNull(taskManager.getSubtask(subtask.getId()));
+        assertThrows(NotFoundException.class, () -> {taskManager.getSubtask(subtask.getId());
+        });
     }
 }

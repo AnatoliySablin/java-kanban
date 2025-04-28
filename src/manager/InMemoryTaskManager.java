@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.NotFoundException;
 import model.Epic;
 import model.Status;
 import model.Subtask;
@@ -36,11 +37,12 @@ public class InMemoryTaskManager implements TaskManager {
                 task.setId(getCount());
                 tasks.put(task.getId(), task);
                 prioritizedTasks.add(task);
+                return task.getId();
+            } else {
+                return -1;
             }
-            return task.getId();
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     @Override
@@ -128,27 +130,30 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTask(int id) {
         Task task = tasks.get(id);
-        if (task != null) {
-            historyManager.add(task);
+        if (task == null) {
+            throw new NotFoundException("Task not found");
         }
+        historyManager.add(task);
         return task;
     }
 
     @Override
     public Epic getEpic(int id) {
         Epic epic = epics.get(id);
-        if (epic != null) {
-            historyManager.add(epic);
+        if (epic == null) {
+            throw new NotFoundException("Epic not found");
         }
+        historyManager.add(epic);
         return epic;
     }
 
     @Override
     public Subtask getSubtask(int id) {
         Subtask subtask = subtasks.get(id);
-        if (subtask != null) {
-            historyManager.add(subtask);
+        if (subtask == null) {
+            throw new NotFoundException("Subtask not found");
         }
+        historyManager.add(subtask);
         return subtask;
     }
 
@@ -338,17 +343,28 @@ public class InMemoryTaskManager implements TaskManager {
         if (task == null) {
             throw new IllegalArgumentException("Task не может быть null");
         }
-
         if (task.getStartTime() == null || task.getEndTime() == null) {
             throw new IllegalArgumentException("Время начала и окончания задачи не могут быть null");
+        }
+        if (task.getStartTime().isAfter(task.getEndTime())) {
+            throw new IllegalArgumentException("Время начала не может быть позже времени окончания");
         }
 
         return prioritizedTasks.stream()
                 .filter(t -> t.getId() != task.getId())
                 .noneMatch(prioritizedTask -> {
-                    return !(
-                            task.getEndTime().isBefore(prioritizedTask.getStartTime()) ||
-                                    task.getStartTime().isAfter(prioritizedTask.getEndTime())
+                    // Проверяем наличие пересечения временных интервалов
+                    return (
+                            (task.getStartTime().isAfter(prioritizedTask.getStartTime()) &&
+                                    task.getStartTime().isBefore(prioritizedTask.getEndTime())) ||
+                                    (task.getEndTime().isAfter(prioritizedTask.getStartTime()) &&
+                                            task.getEndTime().isBefore(prioritizedTask.getEndTime())) ||
+                                    (prioritizedTask.getStartTime().isAfter(task.getStartTime()) &&
+                                            prioritizedTask.getStartTime().isBefore(task.getEndTime())) ||
+                                    (prioritizedTask.getEndTime().isAfter(task.getStartTime()) &&
+                                            prioritizedTask.getEndTime().isBefore(task.getEndTime())) ||
+                                    (task.getStartTime().equals(prioritizedTask.getStartTime()) &&
+                                            task.getEndTime().equals(prioritizedTask.getEndTime()))
                     );
                 });
     }
