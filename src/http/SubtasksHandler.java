@@ -1,15 +1,14 @@
 package http;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import manager.TaskManager;
 import model.Subtask;
 
 import java.io.IOException;
 
-public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
+public class SubtasksHandler extends BaseHttpHandler<Subtask> {
     public SubtasksHandler(TaskManager managers) {
-        super(managers, Subtask.class);
+        super(managers);
     }
 
     @Override
@@ -18,19 +17,19 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
 
         switch (endpoint) {
             case GET_ALL: {
-                getAllTask(exchange);
+                getAllSubtask(exchange);
                 break;
             }
             case GET: {
-                getTask(exchange);
+                getSubtask(exchange);
                 break;
             }
             case POST: {
-                postTask(exchange);
+                postSubtask(exchange);
                 break;
             }
             case DELETE: {
-                deleteTask(exchange);
+                deleteSubtask(exchange);
                 break;
             }
             default:

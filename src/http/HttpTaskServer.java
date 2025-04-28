@@ -33,6 +33,6 @@ public class HttpTaskServer {
     }
 
     public void stopServer() {
-        httpServer.stop(1);
+        this.httpServer.stop(1);
     }
 }

@@ -152,7 +152,6 @@ public class TasksHandlerTest {
         URI urlPost = URI.create("http://localhost:8080/tasks");
         HttpRequest request;
         HttpResponse<String> response;
-        int taskId = 1;
 
         Task task1 = new Task("Task1", "description", 2, NEW, LocalDateTime.of(2025, 4, 17, 19, 30),
                 Duration.ofMinutes(10));
@@ -173,7 +172,7 @@ public class TasksHandlerTest {
         assertEquals(201, response.statusCode());
 
 
-        URI urlGet = URI.create("http://localhost:8080/tasks/" + taskId);
+        URI urlGet = URI.create("http://localhost:8080/tasks/" + task1.getId());
         request = HttpRequest.newBuilder()
                 .uri(urlGet)
                 .GET()
@@ -181,7 +180,7 @@ public class TasksHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
 
-        Task expect = manager.getTask(taskId);
+        Task expect = manager.getTask(task1.getId());
         Task actual = gson.fromJson(response.body(), Task.class);
 
         assertEquals(expect.getId(), actual.getId());

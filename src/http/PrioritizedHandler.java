@@ -1,13 +1,11 @@
 package http;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import manager.TaskManager;
 
 import java.io.IOException;
 
-public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
+public class PrioritizedHandler extends BaseHttpHandler {
     public PrioritizedHandler(TaskManager managers) {
         super(managers);
     }
@@ -15,8 +13,9 @@ public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         if (exchange.getRequestMethod().equals("GET")) {
-            Gson gson = getGson();
-            sendText(exchange, 200, gson.toJson(getManagers().getPrioritizedTasks()));
+            sendText(exchange, 200, gson.toJson(managers.getPrioritizedTasks()));
+        } else {
+            sendText(exchange, 405, "Метод запроса не поддерживается.");
         }
     }
 }

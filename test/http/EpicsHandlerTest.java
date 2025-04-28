@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import manager.InMemoryTaskManager;
 import manager.TaskManager;
 import model.Epic;
-import model.Status;
 import model.Subtask;
 import model.Task;
 import model.adapters.DurationAdapter;
@@ -65,11 +64,11 @@ public class EpicsHandlerTest {
 
         assertEquals(201, response.statusCode());
 
-        List<Task> tasksFromManager = manager.getTasks();
+        List<Epic> epicsFromManager = manager.getEpics();
 
-        assertNotNull(tasksFromManager, "Задачи не возвращаются");
-        assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-        assertEquals("Epic", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
+        assertNotNull(epicsFromManager, "Задачи не возвращаются");
+        assertEquals(1, epicsFromManager.size(), "Некорректное количество задач");
+        assertEquals("Epic", epicsFromManager.get(0).getName(), "Некорректное имя задачи");
     }
 
     @Test
@@ -79,11 +78,10 @@ public class EpicsHandlerTest {
         HttpRequest request;
         HttpResponse<String> response;
 
-        Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, LocalDateTime.of(2025, 4, 17, 19, 40),
-                Duration.ofMinutes(10));
+        Epic epic1 = new Epic("Epic1", "description", 1, NEW);
         request = HttpRequest.newBuilder()
                 .uri(urlPostTask)
-                .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(task1)))
+                .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(epic1)))
                 .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
@@ -105,10 +103,8 @@ public class EpicsHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
 
-        List<Task> expectList = manager.getTasks().stream()
-                .filter(task -> task.getClass() == Epic.class)
-                .toList();
-        List<Task> actualList = gson.fromJson(response.body(), new EpicListTypeToken().getType());
+        List<Epic> expectList = manager.getEpics();
+        List<Epic> actualList = gson.fromJson(response.body(), new EpicListTypeToken().getType());
 
         for (int i = 0; i < actualList.size(); i++) {
             Task actualTask = actualList.get(i);
@@ -124,7 +120,7 @@ public class EpicsHandlerTest {
         URI urlPost = URI.create("http://localhost:8080/epics");
         HttpRequest request;
         HttpResponse<String> response;
-        int taskId = 1;
+        int epicId = 1;
 
         Epic epic1 = new Epic("Epic1", "description", 1, NEW);
         request = HttpRequest.newBuilder()
@@ -143,7 +139,7 @@ public class EpicsHandlerTest {
         assertEquals(201, response.statusCode());
 
 
-        URI urlGet = URI.create("http://localhost:8080/epics/" + taskId);
+        URI urlGet = URI.create("http://localhost:8080/epics/" + epicId);
         request = HttpRequest.newBuilder()
                 .uri(urlGet)
                 .GET()
@@ -151,8 +147,8 @@ public class EpicsHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
 
-        Task expect = manager.getTask(taskId);
-        Task actual = gson.fromJson(response.body(), Task.class);
+        Epic expect = manager.getEpic(epicId);
+        Epic actual = gson.fromJson(response.body(), Epic.class);
 
         assertEquals(expect.getId(), actual.getId());
         assertEquals(expect.getName(), actual.getName());
@@ -188,7 +184,7 @@ public class EpicsHandlerTest {
         URI urlPostSubtask = URI.create("http://localhost:8080/subtasks");
         HttpRequest request;
         HttpResponse<String> response;
-        int taskId = 1;
+        int epicId = 1;
 
         Epic epic = new Epic("Epic1", "description", 1, NEW);
         request = HttpRequest.newBuilder()
@@ -227,34 +223,16 @@ public class EpicsHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
 
-        List<Task> expectList = manager.getTasks().stream()
-                .filter(task -> task.getClass() == Subtask.class)
-                .toList();
-        List<Task> actualList = gson.fromJson(response.body(), new SubtaskListTypeToken().getType());
+        List<Subtask> expectList = manager.getSubtasks();
+        List<Subtask> actualList = gson.fromJson(response.body(), new SubtaskListTypeToken().getType());
 
         assertEquals(expectList.size(), actualList.size());
         for (int i = 0; i < actualList.size(); i++) {
-            Task actualTask = actualList.get(i);
-            Task expectTask = expectList.get(i);
-            assertEquals(expectTask.getId(), actualTask.getId());
-            assertEquals(expectTask.getName(), actualTask.getName());
-            assertEquals(expectTask.getStatus(), actualTask.getStatus());
+            Task actualSubtask = actualList.get(i);
+            Task expectSubtask = expectList.get(i);
+            assertEquals(expectSubtask.getId(), actualSubtask.getId());
+            assertEquals(expectSubtask.getName(), actualSubtask.getName());
+            assertEquals(expectSubtask.getStatus(), actualSubtask.getStatus());
         }
-    }
-
-    public TaskManager getManager() {
-        return manager;
-    }
-
-    public HttpTaskServer getTaskServer() {
-        return taskServer;
-    }
-
-    public HttpClient getClient() {
-        return client;
-    }
-
-    public Gson getGson() {
-        return gson;
     }
 }

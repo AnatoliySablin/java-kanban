@@ -14,12 +14,12 @@ public class DurationAdapter extends TypeAdapter<Duration> {
         if (value == null) {
             out.nullValue();
         } else {
-            out.value(value.toString());
+            out.value(value.toMinutes());
         }
     }
 
     @Override
     public Duration read(final JsonReader in) throws IOException {
-        return Duration.parse(in.nextString());
+        return Duration.ofMinutes(in.nextInt());
     }
 }

@@ -1,17 +1,15 @@
 package http;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import exceptions.NotFoundException;
 import manager.TaskManager;
 import model.Epic;
 
 import java.io.IOException;
 
-public class EpicsHandler extends BaseHttpHandler<Epic> implements HttpHandler {
+public class EpicsHandler extends BaseHttpHandler<Epic> {
     public EpicsHandler(TaskManager managers) {
-        super(managers, Epic.class);
+        super(managers);
     }
 
     @Override
@@ -20,11 +18,11 @@ public class EpicsHandler extends BaseHttpHandler<Epic> implements HttpHandler {
 
         switch (endpoint) {
             case GET_ALL: {
-                getAllTask(exchange);
+                getAllEpic(exchange);
                 break;
             }
             case GET: {
-                getTask(exchange);
+                getEpic(exchange);
                 break;
             }
             case GET_WHOLESUBTASK: {
@@ -32,11 +30,11 @@ public class EpicsHandler extends BaseHttpHandler<Epic> implements HttpHandler {
                 break;
             }
             case POST: {
-                postTask(exchange);
+                postEpic(exchange);
                 break;
             }
             case DELETE: {
-                deleteTask(exchange);
+                deleteEpic(exchange);
                 break;
             }
             default:
@@ -45,12 +43,11 @@ public class EpicsHandler extends BaseHttpHandler<Epic> implements HttpHandler {
     }
 
     private void getWholeSubtasks(HttpExchange exchange) throws IOException {
-        Gson gson = getGson();
         String[] pathParts = exchange.getRequestURI().getPath().split("/");
         try {
             int id = Integer.parseInt(pathParts[2]);
-            Epic epic = getManagers().getEpic(id);
-            sendText(exchange, 200, gson.toJson(getManagers().getEpicSubtasks(epic.getId())));
+            Epic epic = managers.getEpic(id);
+            sendText(exchange, 200, gson.toJson(managers.getEpicSubtasks(epic.getId())));
         } catch (NotFoundException e) {
             sendNotFound(exchange);
         } catch (NumberFormatException e) {

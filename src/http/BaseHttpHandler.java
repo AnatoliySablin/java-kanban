@@ -2,9 +2,13 @@ package http;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import exceptions.NotFoundException;
 import manager.TaskManager;
+import model.Epic;
+import model.Subtask;
 import model.Task;
 import model.adapters.DurationAdapter;
 import model.adapters.LocalDateTimeAdapter;
@@ -16,24 +20,17 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public abstract class BaseHttpHandler<T extends Task> {
-    private final Gson gson = new GsonBuilder()
+public abstract class BaseHttpHandler<T extends Task> implements HttpHandler {
+    protected final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Duration.class, new DurationAdapter())
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .setPrettyPrinting()
             .create();
-    private final TaskManager managers;
-    private Class<T> type;
+    protected final TaskManager managers;
 
     public BaseHttpHandler(TaskManager managers) {
         this.managers = managers;
     }
-
-    public BaseHttpHandler(TaskManager managers, Class<T> type) {
-        this.managers = managers;
-        this.type = type;
-    }
-
 
     protected Endpoint getEndpoint(String requestPath, String requestMethod) {
         String[] pathParts = requestPath.split("/");
@@ -66,19 +63,52 @@ public abstract class BaseHttpHandler<T extends Task> {
     }
 
     protected void getAllTask(HttpExchange exchange) throws IOException {
-        List<T> taskList = getManagers().getTasks().stream()
-                .filter(task -> type.isInstance(task))
-                .map(type::cast)
-                .toList();
+        List<Task> taskList = managers.getTasks();
         sendText(exchange, 200, gson.toJson(taskList));
+    }
+
+    protected void getAllEpic(HttpExchange exchange) throws IOException {
+        List<Epic> epicList = managers.getEpics();
+        sendText(exchange, 200, gson.toJson(epicList));
+    }
+
+    protected void getAllSubtask(HttpExchange exchange) throws IOException {
+        List<Subtask> subtaskList = managers.getSubtasks();
+        sendText(exchange, 200, gson.toJson(subtaskList));
     }
 
     protected void getTask(HttpExchange exchange) throws IOException {
         String[] pathParts = exchange.getRequestURI().getPath().split("/");
         try {
             int id = Integer.parseInt(pathParts[2]);
-            T task = type.cast(getManagers().getTask(id));
+            Task task = managers.getTask(id);
             sendText(exchange, 200, gson.toJson(task));
+        } catch (NotFoundException e) {
+            sendNotFound(exchange);
+        } catch (NumberFormatException e) {
+            sendBadRequest(exchange);
+        }
+    }
+
+    protected void getEpic(HttpExchange exchange) throws IOException {
+        String[] pathParts = exchange.getRequestURI().getPath().split("/");
+        try {
+            int epicID = Integer.parseInt(pathParts[2]);
+            Epic epic = managers.getEpic(epicID);
+            sendText(exchange, 200, gson.toJson(epic));
+        } catch (NotFoundException e) {
+            sendNotFound(exchange);
+        } catch (NumberFormatException e) {
+            sendBadRequest(exchange);
+        }
+    }
+
+    protected void getSubtask(HttpExchange exchange) throws IOException {
+        String[] pathParts = exchange.getRequestURI().getPath().split("/");
+        try {
+            int id = Integer.parseInt(pathParts[2]);
+            Subtask subtask = managers.getSubtask(id);
+            sendText(exchange, 200, gson.toJson(subtask));
         } catch (NotFoundException e) {
             sendNotFound(exchange);
         } catch (NumberFormatException e) {
@@ -89,12 +119,70 @@ public abstract class BaseHttpHandler<T extends Task> {
     protected void postTask(HttpExchange exchange) throws IOException {
         InputStream inputStream = exchange.getRequestBody();
         String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        Task task = gson.fromJson(body, type);
-        int result = getManagers().addTask(task);
-        if (result == -1) {
-            sendHasInteractions(exchange);
-        } else {
-            sendText(exchange, 201, gson.toJson(task));
+        if (body.isBlank()) {
+            sendText(exchange, 400, "Request body is empty");
+            return;
+        }
+        try {
+            Task task = gson.fromJson(body, Task.class);
+            if (task.getId() == null || task.getId() == 0) {
+                int result = managers.addTask(task);
+                if (result == -1) {
+                    sendHasInteractions(exchange);
+                } else {
+                    sendText(exchange, 201, gson.toJson(task));
+                }
+            } else {
+                managers.updateTask(task);
+                sendText(exchange, 201, gson.toJson(task));
+            }
+        } catch (JsonSyntaxException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void postEpic(HttpExchange exchange) throws IOException {
+        InputStream inputStream = exchange.getRequestBody();
+        String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        if (body.isBlank()) {
+            sendText(exchange, 400, "Request body is empty");
+            return;
+        }
+        try {
+            Epic epic = gson.fromJson(body, Epic.class);
+                int result = managers.addEpic(epic);
+                if (result == -1) {
+                    sendHasInteractions(exchange);
+                } else {
+                    sendText(exchange, 201, gson.toJson(epic));
+                }
+        } catch (JsonSyntaxException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void postSubtask(HttpExchange exchange) throws IOException {
+        InputStream inputStream = exchange.getRequestBody();
+        String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        if (body.isBlank()) {
+            sendText(exchange, 400, "Request body is empty");
+            return;
+        }
+        try {
+            Subtask subtask = gson.fromJson(body, Subtask.class);
+            if (subtask.getId() == null || subtask.getId() == 0) {
+                int result = managers.addSubtask(subtask);
+                if (result == -1) {
+                    sendHasInteractions(exchange);
+                } else {
+                    sendText(exchange, 201, gson.toJson(subtask));
+                }
+            } else {
+                managers.updateSubtask(subtask);
+                sendText(exchange, 201, gson.toJson(subtask));
+            }
+        } catch (JsonSyntaxException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -102,8 +190,30 @@ public abstract class BaseHttpHandler<T extends Task> {
         String[] pathParts = exchange.getRequestURI().getPath().split("/");
         try {
             int id = Integer.parseInt(pathParts[2]);
-            getManagers().deleteTask(id);
-            sendText(exchange, 200, "");
+            managers.deleteTask(id);
+            sendText(exchange, 404, "");
+        } catch (NumberFormatException e) {
+            sendBadRequest(exchange);
+        }
+    }
+
+    protected void deleteEpic(HttpExchange exchange) throws IOException {
+        String[] pathParts = exchange.getRequestURI().getPath().split("/");
+        try {
+            int epicId = Integer.parseInt(pathParts[2]);
+            managers.deleteEpic(epicId);
+            sendText(exchange, 404, "");
+        } catch (NumberFormatException e) {
+            sendBadRequest(exchange);
+        }
+    }
+
+    protected void deleteSubtask(HttpExchange exchange) throws IOException {
+        String[] pathParts = exchange.getRequestURI().getPath().split("/");
+        try {
+            int id = Integer.parseInt(pathParts[2]);
+            managers.deleteSubtask(id);
+            sendText(exchange, 404, "");
         } catch (NumberFormatException e) {
             sendBadRequest(exchange);
         }
@@ -133,14 +243,5 @@ public abstract class BaseHttpHandler<T extends Task> {
         httpExchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         httpExchange.sendResponseHeaders(406, 0);
         httpExchange.close();
-    }
-
-
-    public TaskManager getManagers() {
-        return managers;
-    }
-
-    public Gson getGson() {
-        return gson;
     }
 }

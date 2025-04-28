@@ -1,15 +1,14 @@
 package http;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import manager.TaskManager;
 import model.Task;
 
 import java.io.IOException;
 
-public class TasksHandler extends BaseHttpHandler<Task> implements HttpHandler {
+public class TasksHandler extends BaseHttpHandler<Task> {
     public TasksHandler(TaskManager managers) {
-        super(managers, Task.class);
+        super(managers);
     }
 
     @Override

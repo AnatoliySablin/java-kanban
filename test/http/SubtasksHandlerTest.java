@@ -128,20 +128,4 @@ public class SubtasksHandlerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(400, response.statusCode());
     }
-
-    public TaskManager getManager() {
-        return manager;
-    }
-
-    public HttpTaskServer getTaskServer() {
-        return taskServer;
-    }
-
-    public HttpClient getClient() {
-        return client;
-    }
-
-    public Gson getGson() {
-        return gson;
-    }
 }

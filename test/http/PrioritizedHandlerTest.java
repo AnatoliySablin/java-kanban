@@ -112,20 +112,4 @@ public class PrioritizedHandlerTest {
             assertEquals(expectTask.getStatus(), actualTask.getStatus());
         }
     }
-
-    public TaskManager getManager() {
-        return manager;
-    }
-
-    public HttpTaskServer getTaskServer() {
-        return taskServer;
-    }
-
-    public HttpClient getClient() {
-        return client;
-    }
-
-    public Gson getGson() {
-        return gson;
-    }
 }
